@@ -14,7 +14,10 @@
   [role="tab"][aria-selected="true"] { color: #6d28d9; border-color: #7c3aed; }
   summary { list-style: none; }
   summary::-webkit-details-marker { display: none; }
+  .stretched::after { content: ''; position: absolute; inset: 0; }
+  [aria-pressed="true"].chip { background: #6d28d9; border-color: #6d28d9; color: #fff; }
 </style>
+<script src="01_文獻探討/papers.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800">
 
@@ -62,7 +65,7 @@
         <div>
           <h2 class="font-bold text-amber-900 mb-1">下一步</h2>
           <ul class="text-sm text-amber-900 space-y-1 list-disc list-outside pl-4">
-            <li>核對 Chen (2026) 的精讀草稿，確認後產出正式 Critical Form（<a href="#literature" class="underline">前往文獻</a>）</li>
+            <li>核對 Chen (2026) 的精讀草稿，確認後產出正式 Critical Form（<a href="01_文獻探討/paper.html?id=Chen2026#critical-form" class="underline">打開 Critical Form</a>）</li>
             <li>研究架構已完成，可以開始研究設計：選擇訪談技法、規劃招募與倫理（<a href="#method" class="underline">前往研究方法</a>）</li>
           </ul>
         </div>
@@ -147,48 +150,34 @@
     </section>
 
     <!-- ========== 文獻 ========== -->
-    <section role="tabpanel" id="panel-literature" aria-labelledby="tab-literature" class="space-y-6" hidden>
+    <section role="tabpanel" id="panel-literature" aria-labelledby="tab-literature" class="space-y-4" hidden>
 
-      <!-- 文獻地圖 -->
-      <div class="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 class="font-bold text-slate-900 mb-1">文獻地圖</h2>
-        <p class="text-sm text-slate-500 mb-4">背景知識、近三年研究、研究缺口</p>
-        <div class="bg-slate-50 border border-dashed border-slate-300 rounded-lg p-5 text-sm text-slate-600">
-          <p class="font-semibold text-slate-700 mb-1"><i class="fa-solid fa-circle-info text-slate-400 mr-1"></i>此專案未做完整文獻回顧</p>
-          <p>研究缺口直接採用 Chen (2026) 在結論中自陳的樣本限制（排除酷兒群體），見<a href="#question" class="text-violet-700 underline">研究問題</a>。之後若需要補強文獻支撐，可再跑一次文獻回顧。</p>
-        </div>
+      <div class="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-xs text-slate-600">
+        <i class="fa-solid fa-circle-info text-slate-400 mr-1"></i>此專案未做完整文獻回顧，研究缺口採用 Chen (2026) 自陳的樣本限制（見<a href="#question" class="text-violet-700 underline">研究問題</a>）。以下是資料夾內既有的文獻。
       </div>
 
-      <!-- 精讀論文 -->
-      <div class="bg-white rounded-xl border border-slate-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="font-bold text-slate-900">精讀論文 <span class="text-sm font-normal text-slate-400">1 篇</span></h2>
+      <!-- 工具列 -->
+      <div class="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+        <div class="flex flex-col md:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <label for="litSearch" class="sr-only">搜尋文獻</label>
+            <input id="litSearch" type="search" placeholder="搜尋標題、作者、期刊或年份" class="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+          </div>
+          <label class="flex items-center gap-2 text-sm text-slate-600 shrink-0">
+            排序
+            <select id="litSort" class="rounded-lg border border-slate-300 py-2 pl-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400">
+              <option value="year-desc">年份：新到舊</option>
+              <option value="year-asc">年份：舊到新</option>
+              <option value="author">第一作者：A–Z</option>
+            </select>
+          </label>
         </div>
-
-        <article class="border border-slate-200 rounded-lg p-5">
-          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-3">
-            <h3 class="font-semibold text-slate-900 leading-snug">Intimate data performativity: Taiwanese women's self-care practices with menstrual tracking apps</h3>
-            <span class="shrink-0 self-start text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">抽取草稿 · 待確認</span>
-          </div>
-          <p class="text-xs text-slate-500 mb-4">Chen, W.-P. (2026). <em>Asian Journal of Communication</em>. Advance online publication. <a href="https://doi.org/10.1080/01292986.2026.2686753" target="_blank" rel="noopener" class="text-violet-700 hover:underline">doi.org/10.1080/01292986.2026.2686753</a></p>
-
-          <details class="group mb-4">
-            <summary class="cursor-pointer text-sm font-semibold text-slate-700 hover:text-slate-900 select-none">
-              <i class="fa-solid fa-chevron-right text-xs mr-1 transition group-open:rotate-90"></i>中文摘要
-            </summary>
-            <p class="text-sm text-slate-600 leading-relaxed mt-3 pl-4 border-l-2 border-slate-200">台灣女性在演算法系統、文化期待與具身經驗交會之處，協商經期追蹤 App 的使用。本研究採用結合日記研究法與深度訪談的質化數位方法，訪談 16 位參與者，發展出「親密資料展演性」作為概念透鏡。研究浮現三個相互關聯的維度：具身知識生產中的演算法協商、追蹤整合進自我優化實踐所暴露的賦權與控制矛盾、以及資料分享對親密關係的重構。這些展演性實踐超越了賦權或規訓的二元框架。</p>
-          </details>
-
-          <div class="flex flex-wrap gap-2 text-xs">
-            <a href="01_文獻探討/critical-form/Chen2026/01_抽取草稿.md" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-violet-50 text-violet-800 hover:bg-violet-100"><i class="fa-solid fa-file-lines"></i>Critical Form 草稿</a>
-            <a href="01_文獻探討/critical-form/Chen2026/翻譯摘要.md" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"><i class="fa-solid fa-language"></i>翻譯摘要</a>
-            <a href="01_文獻探討/critical-form/Chen2026/筆記.md" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"><i class="fa-solid fa-pen"></i>我的筆記</a>
-            <a href="../Chen_2026_intimate_data_performativity_Taiwanese_women_menstrual_tracking.pdf" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200" title="PDF 不放進 repo，只在你本機資料夾裡"><i class="fa-solid fa-file-pdf"></i>原文 PDF（僅本機）</a>
-          </div>
-        </article>
+        <div id="litFilters" class="flex flex-wrap gap-2" role="group" aria-label="篩選"></div>
       </div>
 
-      <p class="text-xs text-slate-400"><i class="fa-solid fa-folder-open mr-1"></i>repo 根目錄另有約 20 篇文獻 PDF 與 <code>translations/</code> 中文摘要，尚未納入此專案。</p>
+      <p id="litCount" class="text-sm text-slate-500" aria-live="polite"></p>
+      <div id="litList" class="space-y-3"></div>
     </section>
 
     <!-- ========== 研究問題 ========== -->
@@ -350,6 +339,108 @@
   </main>
 
 <script>
+  // ---------- 文獻清單 ----------
+  (() => {
+    const papers = window.PAPERS || [];
+    const OPEN_KINDS = ['cc-by', 'cc-by-nc', 'cc-by-nc-nd'];
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // 第一作者姓氏取自 APA 書目，才能正確處理 Campo Woytuk 這類複姓
+    const firstSurname = p => /[一-鿿]/.test(p.authors[0]) ? p.authors[0] : p.apa.split(',')[0];
+    // 會議論文依 ACM 慣例寫「CHI '24: Proceedings…」，期刊與預印本只寫全名
+    const venueLine = p => /'\d{2}/.test(p.venueShort)
+      ? `<span class="font-semibold text-slate-700">${esc(p.venueShort)}</span>: ${esc(p.venue)}`
+      : `<span class="font-semibold text-slate-700">${esc(p.venue)}</span>`;
+
+    const FILTERS = [
+      { id: 'all',         label: '全部',       test: () => true },
+      { id: 'read',        label: '精讀中',     test: p => !!p.criticalFormMd },
+      { id: 'guide',       label: '有中文導讀', test: p => !!(p.guideMd || p.translationMd) },
+      { id: 'open',        label: '開放取用',   test: p => OPEN_KINDS.includes(p.licenseKind) },
+    ];
+    const state = { q: '', filter: 'all', sort: 'year-desc' };
+
+    const filtersEl = document.getElementById('litFilters');
+    filtersEl.innerHTML = FILTERS.map(f => `
+      <button type="button" class="chip px-3 py-1 rounded-full border border-slate-300 text-sm text-slate-600 hover:border-violet-400" data-filter="${f.id}" aria-pressed="${f.id === state.filter}">
+        ${f.label} <span class="opacity-70">${papers.filter(f.test).length}</span>
+      </button>`).join('');
+
+    function card(p) {
+      const open = OPEN_KINDS.includes(p.licenseKind);
+      const shownAuthors = p.authors.length > 6 ? [...p.authors.slice(0, 6), `+${p.authors.length - 6} 位`] : p.authors;
+      const link = p.doi ? `https://doi.org/${p.doi}` : p.url;
+      const status = [
+        p.criticalFormMd
+          ? `<span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800"><i class="fa-solid fa-file-lines"></i>Critical Form · ${esc(p.criticalForm.stage)}</span>`
+          : '',
+        p.guideMd
+          ? `<span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800"><i class="fa-solid fa-list-ol"></i>逐段導讀</span>`
+          : '',
+        p.translationMd
+          ? `<span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-sky-50 text-sky-800"><i class="fa-solid fa-language"></i>重點整理</span>`
+          : '',
+        !p.guideMd && !p.translationMd
+          ? `<span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500"><i class="fa-solid fa-language"></i>尚無中文導讀</span>`
+          : '',
+      ].join('');
+      return `
+        <article class="relative bg-white rounded-xl border border-slate-200 p-5 hover:border-violet-300 hover:shadow-sm transition">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] mb-2">
+            <span class="uppercase tracking-wide font-semibold text-slate-500">${esc(p.type)}</span>
+            ${open ? `<span class="inline-flex items-center gap-1 text-emerald-700"><i class="fa-solid fa-lock-open"></i>Open Access</span>` : ''}
+          </div>
+          <h3 class="font-semibold text-slate-900 leading-snug">
+            <a href="01_文獻探討/paper.html?id=${encodeURIComponent(p.id)}" class="stretched hover:text-violet-700 focus:outline-none focus-visible:underline">${esc(p.title)}</a>
+          </h3>
+          ${p.titleZh ? `<p class="text-sm text-slate-500 mt-0.5">${esc(p.titleZh)}</p>` : ''}
+          <p class="text-sm text-violet-700 mt-2">${shownAuthors.map(esc).join(/[一-鿿]/.test(p.authors[0]) ? '、' : ', ')}</p>
+          <p class="text-xs text-slate-500 mt-1">${venueLine(p)} · ${p.year}${p.detail ? ' · ' + esc(p.detail) : ''}</p>
+          <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap gap-1.5">${status}</div>
+            ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" class="relative z-10 text-xs text-slate-500 hover:text-violet-700 break-all">${esc(link.replace('https://', ''))}</a>` : ''}
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      const q = state.q.trim().toLowerCase();
+      const f = FILTERS.find(x => x.id === state.filter);
+      let list = papers.filter(f.test).filter(p => !q || [p.title, p.titleZh, p.venue, p.venueShort, p.year, ...p.authors].join(' ').toLowerCase().includes(q));
+      const byAuthor = (a, b) => firstSurname(a).localeCompare(firstSurname(b), 'en');
+      list.sort({
+        'year-desc': (a, b) => b.year - a.year || byAuthor(a, b),
+        'year-asc':  (a, b) => a.year - b.year || byAuthor(a, b),
+        'author':    (a, b) => byAuthor(a, b) || b.year - a.year,
+      }[state.sort]);
+
+      document.getElementById('litCount').textContent = `顯示 ${list.length} / ${papers.length} 篇`;
+      document.getElementById('litList').innerHTML = list.length
+        ? list.map(card).join('')
+        : `<div class="bg-white rounded-xl border border-slate-200 p-10 text-center text-sm text-slate-500">
+             沒有符合的文獻。<button type="button" id="litReset" class="text-violet-700 underline">清除搜尋與篩選</button>
+           </div>`;
+      const reset = document.getElementById('litReset');
+      if (reset) reset.addEventListener('click', () => {
+        state.q = ''; state.filter = 'all';
+        document.getElementById('litSearch').value = '';
+        filtersEl.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.filter === 'all'));
+        render();
+      });
+    }
+
+    document.getElementById('litSearch').addEventListener('input', e => { state.q = e.target.value; render(); });
+    document.getElementById('litSort').addEventListener('change', e => { state.sort = e.target.value; render(); });
+    filtersEl.addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      state.filter = btn.dataset.filter;
+      filtersEl.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b === btn));
+      render();
+    });
+    render();
+  })();
+
+  // ---------- 分頁 ----------
   const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
   const ids = tabs.map(t => t.dataset.tab);
 

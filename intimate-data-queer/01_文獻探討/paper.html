@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文獻 — paper2026</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="papers.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', sans-serif; }
+  .tab-scroll { scrollbar-width: none; }
+  .tab-scroll::-webkit-scrollbar { display: none; }
+  [role="tab"][aria-selected="true"] { color: #6d28d9; border-color: #7c3aed; }
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  mark.key-term { background: #fef3c7; color: #92400e; padding: 0 3px; border-radius: 3px; }
+  .prose > :first-child { margin-top: 0 !important; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-4xl mx-auto px-4 md:px-6 pt-6 pb-7">
+      <nav class="text-sm text-slate-400 mb-5 flex flex-wrap items-center gap-x-2 gap-y-1" aria-label="麵包屑">
+        <a href="../../index.html" class="hover:text-white">所有專案</a>
+        <span>/</span>
+        <a href="../index.html" class="hover:text-white">intimate-data-queer</a>
+        <span>/</span>
+        <a href="../index.html#literature" class="hover:text-white">文獻</a>
+        <span>/</span>
+        <span id="crumb" class="text-slate-300"></span>
+      </nav>
+
+      <div id="badges" class="flex flex-wrap items-center gap-2 text-xs mb-3"></div>
+      <h1 id="title" class="text-xl md:text-2xl font-bold leading-snug"></h1>
+      <p id="titleZh" class="text-slate-300 mt-1.5"></p>
+      <p id="authors" class="text-sm text-violet-200 mt-4"></p>
+      <p id="venue" class="text-sm text-slate-400 mt-1"></p>
+
+      <div class="flex flex-wrap gap-2 mt-5 text-sm">
+        <a id="doiBtn" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>DOI</span></a>
+        <button id="copyApa" type="button" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20"><i class="fa-regular fa-copy"></i><span>複製 APA</span></button>
+        <a id="pdfBtn" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20" title="PDF 不放進 repo，只在你本機資料夾裡"><i class="fa-solid fa-file-pdf"></i><span>原文 PDF（僅本機）</span></a>
+      </div>
+
+      <details class="group mt-4 text-sm">
+        <summary class="cursor-pointer text-slate-400 hover:text-white select-none inline-flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-right text-[10px] transition group-open:rotate-90"></i>APA 7 引用格式
+        </summary>
+        <p id="apa" class="mt-2 bg-white/5 border border-white/10 rounded-md p-3 text-slate-200 leading-relaxed pl-8 -indent-6"></p>
+      </details>
+    </div>
+  </header>
+
+  <div class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-4xl mx-auto px-4 md:px-6">
+      <div role="tablist" aria-label="文獻內容" class="tab-scroll flex gap-1 overflow-x-auto -mb-px">
+        <button role="tab" id="tab-translation" aria-controls="panel-translation" data-tab="translation" class="shrink-0 px-3 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-800">中文導讀</button>
+        <button role="tab" id="tab-critical-form" aria-controls="panel-critical-form" data-tab="critical-form" class="shrink-0 px-3 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-800">Critical Form・筆記</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 md:px-6 py-8">
+    <section role="tabpanel" id="panel-translation" aria-labelledby="tab-translation" class="space-y-4"></section>
+    <section role="tabpanel" id="panel-critical-form" aria-labelledby="tab-critical-form" class="space-y-4" hidden></section>
+  </main>
+
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity" role="status" aria-live="polite"></div>
+
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  const paper = (window.PAPERS || []).find(p => p.id === id);
+  const $ = sel => document.querySelector(sel);
+
+  const OPEN_KINDS = ['cc-by', 'cc-by-nc', 'cc-by-nc-nd'];
+  const SECTION_COLORS = [
+    { bar: 'border-l-blue-400',    badge: 'bg-blue-600' },
+    { bar: 'border-l-emerald-400', badge: 'bg-emerald-600' },
+    { bar: 'border-l-violet-400',  badge: 'bg-violet-600' },
+    { bar: 'border-l-amber-400',   badge: 'bg-amber-600' },
+    { bar: 'border-l-rose-400',    badge: 'bg-rose-600' },
+    { bar: 'border-l-cyan-400',    badge: 'bg-cyan-600' },
+    { bar: 'border-l-slate-400',   badge: 'bg-slate-500' },
+  ];
+
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const md = text => DOMPurify.sanitize(marked.parse(text.replace(/\[\[(.+?)\]\]/g, '<mark class="key-term">$1</mark>')));
+  const apaHtml = s => esc(s).replace(/\*(.+?)\*/g, '<em>$1</em>');
+  const apaPlain = s => s.replace(/\*(.+?)\*/g, '$1');
+  const isZh = s => /[一-鿿]/.test(s);
+  const joinAuthors = list => list.join(isZh(list[0]) ? '、' : ', ');
+  // 姓氏取自 APA 書目（處理 Campo Woytuk 這類複姓），年份也取自書目（保留 2026a／2026b）
+  const shortCite = p => {
+    const [first, second] = p.authors;
+    const year = (p.apa.match(/[（(](\d{4}[a-z]?)[）)]/) || [, p.year])[1];
+    if (isZh(first)) return `${first}${p.authors.length > 2 ? '等' : second ? `、${second}` : ''}（${year}）`;
+    const firstSurname = p.apa.split(',')[0];
+    const secondSurname = (p.apa.match(/&\s+([^,]+),/) || [, ''])[1];
+    const rest = p.authors.length > 2 ? ' et al.' : second ? ` & ${secondSurname}` : '';
+    return `${firstSurname}${rest} (${year})`;
+  };
+
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.remove('opacity-0');
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => t.classList.add('opacity-0'), 1800);
+  }
+
+  async function copyApa() {
+    const html = apaHtml(paper.apa), text = apaPlain(paper.apa);
+    try {
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' }),
+      })]);
+    } catch {
+      const ta = Object.assign(document.createElement('textarea'), { value: text });
+      document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    toast('已複製 APA 引用');
+  }
+
+  function renderHeader() {
+    document.title = `${shortCite(paper)} — paper2026`;
+    $('#crumb').textContent = shortCite(paper);
+    $('#title').textContent = paper.title;
+    $('#titleZh').textContent = paper.titleZh || '';
+    $('#authors').textContent = joinAuthors(paper.authors);
+    const venue = /'\d{2}/.test(paper.venueShort)
+      ? `<span class="font-semibold text-slate-200">${esc(paper.venueShort)}</span>: ${esc(paper.venue)}`
+      : `<span class="font-semibold text-slate-200">${esc(paper.venue)}</span>`;
+    $('#venue').innerHTML = [venue, paper.year, esc(paper.detail)].filter(Boolean).join(' · ');
+    $('#apa').innerHTML = apaHtml(paper.apa);
+
+    const open = OPEN_KINDS.includes(paper.licenseKind);
+    $('#badges').innerHTML = [
+      `<span class="uppercase tracking-wide font-semibold text-slate-300">${esc(paper.type)}</span>`,
+      open
+        ? `<span class="inline-flex items-center gap-1 text-emerald-300"><i class="fa-solid fa-lock-open"></i>Open Access · ${esc(paper.license)}</span>`
+        : `<span class="inline-flex items-center gap-1 text-slate-400"><i class="fa-solid fa-lock"></i>${esc(paper.license)}</span>`,
+    ].join('<span class="text-slate-600">|</span>');
+
+    const link = paper.doi ? `https://doi.org/${paper.doi}` : paper.url;
+    if (link) { $('#doiBtn').href = link; $('#doiBtn span').textContent = paper.doi ? 'DOI' : '原始連結'; }
+    else $('#doiBtn').remove();
+    $('#pdfBtn').href = `../../${paper.pdf}`;
+    $('#copyApa').addEventListener('click', copyApa);
+  }
+
+  function renderGuide() {
+    const items = paper.guideMd.split(/^## /m).filter(s => s.trim()).map(sec => {
+      const [head, ...rest] = sec.split('\n');
+      const [original, zh] = head.split('｜').map(s => s.trim());
+      return `
+        <li class="relative pl-7">
+          <span class="absolute left-0 top-1.5 w-3 h-3 rounded-full border-2 border-violet-400 bg-white"></span>
+          <h3 class="font-bold text-slate-900 leading-snug">${esc(zh || original)}</h3>
+          ${zh ? `<p class="text-xs text-slate-400 mb-2">${esc(original)}</p>` : ''}
+          <div class="prose prose-slate prose-sm max-w-none">${md(rest.join('\n'))}</div>
+        </li>`;
+    }).join('');
+    return `
+      <section class="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
+        <div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+          <h2 class="font-bold text-slate-900 text-lg">逐段導讀</h2>
+          <p class="text-xs text-slate-400">依原文章節順序，每段一兩句說明；細節以原文為準</p>
+        </div>
+        <ol class="relative space-y-6 before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-0.5 before:bg-violet-100">${items}</ol>
+      </section>`;
+  }
+
+  function renderTranslation() {
+    const panel = $('#panel-translation');
+    if (!paper.guideMd && !paper.translationMd) {
+      panel.innerHTML = `
+        <div class="bg-white rounded-xl border border-slate-200 p-10 text-center">
+          <i class="fa-solid fa-language text-4xl text-slate-300 mb-4"></i>
+          <h2 class="font-bold text-slate-900 mb-1">還沒有中文導讀</h2>
+          <p class="text-sm text-slate-500">要建立時跟我說「幫 ${esc(paper.id)} 做逐段導讀」。</p>
+        </div>`;
+      return;
+    }
+    let html = paper.guideMd ? renderGuide() : '';
+    if (paper.translationMd) {
+      html += `
+        <details class="group bg-white rounded-xl border border-slate-200" ${paper.guideMd ? '' : 'open'}>
+          <summary class="cursor-pointer select-none px-6 md:px-8 py-4 flex items-center justify-between gap-3">
+            <span class="font-bold text-slate-900">重點整理 <span class="text-xs font-normal text-slate-400 ml-1">摘要、方法、發現、限制，以及與本研究的關聯</span></span>
+            <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition group-open:rotate-180"></i>
+          </summary>
+          <article class="px-6 md:px-8 pb-8 prose prose-slate max-w-none prose-headings:font-bold prose-h2:text-base prose-h2:mt-6">${md(paper.translationMd)}</article>
+        </details>`;
+    }
+    panel.innerHTML = html;
+  }
+
+  function renderCriticalForm() {
+    const panel = $('#panel-critical-form');
+    let html = '';
+
+    if (paper.criticalFormMd) {
+      const sections = paper.criticalFormMd.split(/^## /m).filter(s => s.trim());
+      html += `
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-slate-900">Critical Form</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">${esc(paper.criticalForm.stage)}</span>
+        </div>`;
+      html += sections.map((sec, i) => {
+        const [head, ...rest] = sec.split('\n');
+        const m = head.match(/^(\d+)\.\s*(.+)$/);
+        const num = m ? m[1] : i + 1;
+        const name = m ? m[2] : head;
+        const color = SECTION_COLORS[(Number(num) - 1) % SECTION_COLORS.length];
+        return `
+          <section class="bg-white rounded-xl border border-slate-200 border-l-4 ${color.bar} p-5 md:p-6">
+            <h3 class="font-bold text-slate-900 flex items-center gap-2 mb-3">
+              <span class="${color.badge} text-white text-xs w-6 h-6 rounded-full inline-flex items-center justify-center">${esc(num)}</span>${esc(name)}
+            </h3>
+            <div class="prose prose-slate prose-sm max-w-none">${md(rest.join('\n'))}</div>
+          </section>`;
+      }).join('');
+    } else {
+      html += `
+        <div class="bg-white rounded-xl border border-slate-200 p-10 text-center">
+          <i class="fa-solid fa-file-circle-question text-4xl text-slate-300 mb-4"></i>
+          <h2 class="font-bold text-slate-900 mb-1">尚未精讀</h2>
+          <p class="text-sm text-slate-500">要開始時跟我說「精讀 ${esc(paper.id)}」，會依 Critical Form 13 個欄位整理。筆記可以先寫。</p>
+        </div>`;
+    }
+
+    html += notesCard();
+    panel.innerHTML = html;
+    wireNotes();
+  }
+
+  const draftKey = () => `paper2026:notes-draft:${paper.id}`;
+  const readDraft = () => { try { return localStorage.getItem(draftKey()); } catch { return null; } };
+  const writeDraft = v => { try { localStorage.setItem(draftKey(), v); return true; } catch { return false; } };
+  const clearDraft = () => { try { localStorage.removeItem(draftKey()); } catch {} };
+
+  function notesCard() {
+    const saved = paper.notesMd
+      ? `<div class="prose prose-slate prose-sm max-w-none">${md(paper.notesMd)}</div>`
+      : `<p class="text-sm text-slate-400">還沒有存進 repo 的筆記。</p>`;
+    return `
+      <section id="notes" class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-fuchsia-400 p-5 md:p-6">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <h3 class="font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-pen text-fuchsia-500"></i>我的筆記</h3>
+          <button id="notesEditBtn" type="button" class="text-sm px-3 py-1.5 rounded-md bg-fuchsia-50 text-fuchsia-800 hover:bg-fuchsia-100">寫筆記</button>
+        </div>
+        <div id="draftBanner" class="hidden mb-3 text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-md px-3 py-2">
+          <i class="fa-solid fa-triangle-exclamation mr-1"></i>這台電腦的瀏覽器裡有尚未存進 repo 的筆記草稿。
+        </div>
+        <div id="notesSaved">${saved}</div>
+        <div id="notesEditor" class="hidden">
+          <label for="notesText" class="sr-only">筆記內容（Markdown）</label>
+          <textarea id="notesText" rows="10" class="w-full rounded-lg border border-slate-300 p-3 text-sm leading-relaxed font-mono focus:outline-none focus:ring-2 focus:ring-fuchsia-400" placeholder="用 Markdown 寫，例如：&#10;- 這篇的關係展演性定義跟我的酷兒研究落差在…"></textarea>
+          <div class="flex flex-wrap items-center justify-between gap-2 mt-2">
+            <p id="notesStatus" class="text-xs text-slate-400">草稿會自動存在這台電腦的瀏覽器</p>
+            <div class="flex gap-2">
+              <button id="notesDiscard" type="button" class="text-sm px-3 py-1.5 rounded-md text-slate-600 hover:bg-slate-100">捨棄草稿</button>
+              <button id="notesDownload" type="button" class="text-sm px-3 py-1.5 rounded-md bg-fuchsia-600 text-white hover:bg-fuchsia-700"><i class="fa-solid fa-download mr-1"></i>下載 筆記.md</button>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mt-3">要存進 repo：把下載的檔案放到 <code class="bg-slate-100 px-1 rounded">${esc(paper.notes)}</code>（資料夾不存在就新建），再請我重新產生頁面。</p>
+        </div>
+      </section>`;
+  }
+
+  function wireNotes() {
+    const editor = $('#notesEditor'), text = $('#notesText'), status = $('#notesStatus');
+    const draft = readDraft();
+    const open = () => {
+      editor.classList.remove('hidden');
+      $('#notesSaved').classList.add('hidden');
+      $('#notesEditBtn').classList.add('hidden');
+      text.value = readDraft() ?? paper.notesMd ?? '';
+      text.focus();
+    };
+    if (draft !== null && draft !== paper.notesMd) { $('#draftBanner').classList.remove('hidden'); open(); }
+
+    $('#notesEditBtn').addEventListener('click', open);
+    let timer;
+    text.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const ok = writeDraft(text.value);
+        status.textContent = ok
+          ? `草稿已存在這台電腦的瀏覽器 · ${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}`
+          : '這個瀏覽器不允許自動存草稿，記得下載';
+        $('#draftBanner').classList.remove('hidden');
+      }, 400);
+    });
+    $('#notesDownload').addEventListener('click', () => {
+      const body = `# 筆記 — ${shortCite(paper)}\n\n${text.value.trim()}\n`;
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([body], { type: 'text/markdown' })),
+        download: '筆記.md',
+      });
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+    $('#notesDiscard').addEventListener('click', () => {
+      if (!confirm('捨棄這台電腦上的筆記草稿？已存進 repo 的筆記不受影響。')) return;
+      clearDraft();
+      editor.classList.add('hidden');
+      $('#notesSaved').classList.remove('hidden');
+      $('#notesEditBtn').classList.remove('hidden');
+      $('#draftBanner').classList.add('hidden');
+      toast('已捨棄草稿');
+    });
+  }
+
+  function setupTabs() {
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    const ids = tabs.map(t => t.dataset.tab);
+    const activate = (tabId, { focus = false, updateHash = true } = {}) => {
+      if (!ids.includes(tabId)) tabId = ids[0];
+      tabs.forEach(t => {
+        const on = t.dataset.tab === tabId;
+        t.setAttribute('aria-selected', on);
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById('panel-' + t.dataset.tab).hidden = !on;
+        if (on && focus) t.focus();
+      });
+      if (updateHash) history.replaceState(null, '', location.search + '#' + tabId);
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => activate(t.dataset.tab));
+      t.addEventListener('keydown', e => {
+        const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (step) activate(ids[(i + step + ids.length) % ids.length], { focus: true });
+      });
+    });
+    activate(location.hash.slice(1) || ids[0], { updateHash: false });
+  }
+
+  if (!paper) {
+    document.querySelector('main').innerHTML = `
+      <div class="bg-white rounded-xl border border-slate-200 p-10 text-center">
+        <h2 class="font-bold text-slate-900 mb-2">找不到這篇文獻</h2>
+        <p class="text-sm text-slate-500 mb-4">網址裡的 id「${esc(id)}」不在文獻清單中。</p>
+        <a href="../index.html#literature" class="text-violet-700 hover:underline">回文獻列表</a>
+      </div>`;
+    document.querySelector('[role="tablist"]').closest('div.sticky').remove();
+    $('#title').textContent = '找不到這篇文獻';
+    document.querySelectorAll('header .flex.flex-wrap.gap-2, header details').forEach(el => el.remove());
+  } else {
+    renderHeader();
+    renderTranslation();
+    renderCriticalForm();
+    setupTabs();
+  }
+</script>
+</body>
+</html>
