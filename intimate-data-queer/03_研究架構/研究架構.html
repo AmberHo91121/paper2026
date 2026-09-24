@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研究架構：酷兒女性經期追蹤中的關係展演性</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', sans-serif; }
+  body.keyword-highlight .key-term {
+    color: #c05621;
+    background-color: #feebc8;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body class="bg-slate-100">
+
+  <div class="max-w-5xl mx-auto my-6 px-4">
+    <div class="bg-blue-50 border border-blue-300 text-blue-800 text-sm rounded-lg px-4 py-2 mb-4">
+      <i class="fa-solid fa-circle-info mr-1"></i>
+      已搬進主題資料夾內部結構（<code class="bg-blue-100 px-1 rounded">intimate-data-queer/03_研究架構/</code>），但整個 <code class="bg-blue-100 px-1 rounded">2026_intimateData/</code> 還不是 git repo——版本紀錄那格的表格暫時還是手動維護。
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 mb-10">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-6 md:p-8 border-b border-slate-800">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3 text-slate-400 text-sm mb-2">
+            <span class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 font-semibold">研究架構</span>
+            <span><i class="fa-solid fa-diagram-project mr-1"></i> Research Framework · Stage C</span>
+          </div>
+          <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide leading-snug">
+            酷兒女性經期追蹤實踐中的關係展演性：延伸 Chen (2026) 的框架
+          </h1>
+        </div>
+        <button id="highlightToggleBtn" onclick="toggleHighlight()"
+          class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+          <i class="fa-solid fa-highlighter"></i>
+          高亮關鍵字
+        </button>
+      </div>
+    </header>
+
+    <main class="p-6 md:p-8 space-y-6">
+
+      <!-- 0. 對應的研究缺口 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-slate-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass-chart text-slate-500"></i>
+          對應的研究缺口（替代來源：Chen 2026 論文自陳限制，見 <code class="bg-slate-100 px-1 rounded text-xs">02_研究架構_StageA.md</code>）
+        </h2>
+        <p class="text-slate-700 leading-relaxed">Chen (2026) 的「親密資料展演性」框架建立在 16 位異性戀、未婚、無子女的順性別女性樣本上，作者明確排除<span class="key-term">酷兒群體</span>、已為人母者，並建議未來研究延伸至其他脈絡比較。目前沒有研究檢視這個框架——尤其其中的「<span class="key-term">關係展演性</span>」維度——是否適用於酷兒女性的經期追蹤實踐。</p>
+      </section>
+
+      <!-- 1. Problem / Aim / Objectives -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-violet-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-violet-200 flex items-center gap-2">
+          <span class="bg-violet-600 text-white text-xs px-2.5 py-1 rounded-full">1</span>
+          Problem / Aim / Objectives（Stage B 已確認，已依 Stage A 評判調整範圍）
+        </h2>
+        <div class="bg-violet-50 border border-violet-200 rounded-lg p-3 mb-4 text-xs text-violet-800">
+          <i class="fa-solid fa-wrench mr-1"></i>
+          Stage A 評判時發現 Aim 講「框架整體」但 Objectives 只深入處理「關係展演性」一個維度——已依建議把 Problem／Aim 的措辭都縮小到明確只聚焦這個維度，不再含糊指涉整個框架。
+        </div>
+        <div class="space-y-4">
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Problem</h3>
+            <p class="text-slate-700 leading-relaxed">Chen (2026) 提出的「親密資料展演性」框架中的<span class="key-term">關係展演性</span>維度，在酷兒女性的經期追蹤與親密關係實踐中是否仍然成立？</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Aim</h3>
+            <p class="text-slate-700 leading-relaxed">探討台灣酷兒女性使用經期追蹤 App 時的資料分享與關係協商實踐，檢視親密資料展演性框架中「關係展演性」這個維度，在非異性戀關係脈絡下是否需要修正。</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Objectives</h3>
+            <ul class="list-disc list-outside pl-5 space-y-1 text-slate-700 leading-relaxed">
+              <li>描述酷兒女性在經期追蹤 App 使用上與 Chen (2026) 異性戀樣本的異同</li>
+              <li>檢視「關係展演性」維度（照顧/監控的性別化動態）在同性伴侶脈絡下如何被重新詮釋</li>
+              <li>根據酷兒女性的實踐經驗，提出「關係展演性」維度的修正或擴展</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 框架構念 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-emerald-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-emerald-200 flex items-center gap-2">
+          <span class="bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full">2</span>
+          研究框架構念（Stage C）
+        </h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-lightbulb text-emerald-500 mr-1"></i>理論構念</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2"><span class="key-term">Relational Performativity</span>（關係展演性，延續自 Chen 2026）、<span class="key-term">Queer Relationality</span>（酷兒親密關係常規）、<span class="key-term">Surveillance Symmetry</span>（監控對稱性，新構念）</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">Chen (2026) 的關係展演性預設異性戀伴侶的不對稱動態（男性伴侶追蹤女性）；要檢驗這個維度在酷兒脈絡下是否成立，需要一個能捕捉「對稱性」變化的構念，不能直接套用原本假設</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">「監控對稱性」目前沒有既有的量測工具或成熟定義，是探索性構念，資料蒐集後可能需要調整定義</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">訪談大綱需要特別設計能誘出「雙方追蹤動態」的問題，不能只從單一受訪者視角問</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-flask-vial text-emerald-500 mr-1"></i>方法選擇</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">質化方法（半結構深度訪談，可能需考慮伴侶雙方訪談／dyadic 訪談）</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">延伸並檢驗既有質化理論框架，需保留跟 Chen (2026) 的方法論可比較性；關係展演性本質上是雙方協商的動態，適合開放式深度訪談，不適合量化測量</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">質化方法的發現不能推論到所有酷兒女性；只訪談一方看不到雙方視角的落差</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">Agent 4 規劃招募時要考慮是否要求成對招募（伴侶雙方都訪談），這會讓招募門檻提高，也牽涉到「單獨訪談單方」跟「訪談雙方」在倫理程序上的差異（要不要讓對方知道另一半也被訪談）</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-database text-emerald-500 mr-1"></i>資料蒐集規劃（概要）</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">深度訪談若干位自認為酷兒（女同志/雙性戀等）、使用經期追蹤 App 的受訪者，理想上涵蓋不同關係狀態（單身／穩定伴侶關係），若可行考慮伴侶雙方都訪談（細節留給 Agent 4 研究設計）</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">樣本需同時滿足「酷兒認同」＋「經期追蹤 App 使用者」＋「願意談論親密關係」三個條件的交集，這個母體本身就小，規劃時要先預期招募比 Chen (2026) 的異性戀樣本更困難</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">這個交集母體小，樣本數可能明顯少於 Chen (2026) 的 16 人，結論的代表性要更保守地宣告</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">Agent 4 的招募條件要考慮透過酷兒社群管道（而非泛用平台）招募，時程要抓更長；且招募文宣措辭要避免意外揭露受訪者身份</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-chart-line text-emerald-500 mr-1"></i>分析方法（概要）</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">沿用 Agent 5（洞見萃取）的九層框架做主題分析，並在 <code class="bg-slate-100 px-1 rounded">04_對應研究框架.md</code> 對照本次三個構念</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">跟 Chen (2026) 的分析取向一致（thematic analysis），方便未來直接比較；九層框架本身已是這條工作流程既有的標準做法</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">主題分析受研究者詮釋影響，Why/Insight/Implication 層級的判斷仍需人工覆核，不是機械式輸出</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">洞見萃取階段要特別留意「監控對稱性」這個探索性構念浮現的資料——它沒有既有理論可直接對照，Pattern 判定會更依賴資料本身，門檻判斷要更謹慎</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="mt-4 bg-emerald-50 rounded-lg border border-emerald-200 p-4">
+          <h3 class="font-bold text-emerald-800 mb-1"><i class="fa-solid fa-trophy mr-1"></i>預期貢獻</h3>
+          <p class="text-emerald-900 text-sm leading-relaxed">修正或擴展 Chen (2026) 的「親密資料展演性」框架，特別是「關係展演性」維度，使其能涵蓋非異性戀伴侶關係動態，回應酷兒群體研究缺口，對女性主義科技研究、酷兒理論與健康傳播三個領域都有貢獻。</p>
+        </div>
+      </section>
+
+      <!-- 3. 對照參考 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-indigo-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-indigo-200 flex items-center gap-2">
+          <span class="bg-indigo-600 text-white text-xs px-2.5 py-1 rounded-full">3</span>
+          對照參考
+        </h2>
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-bold text-slate-800 mb-1">Chen (2026) — Intimate Data Performativity，關係展演性維度</h3>
+          <p class="text-slate-700 text-sm leading-relaxed">原始定義建立在異性戀伴侶的不對稱追蹤動態上（男性伴侶追蹤女性經期，構成「surveillance-intimacy paradox」——關懷與監控交織）。本研究把這個定義當作基準線，檢驗同性伴侶脈絡下追蹤角色是否還維持這種不對稱、還是變得更對稱／協商式，藉此判斷這個維度需不需要修正。</p>
+        </div>
+      </section>
+
+      <!-- 4. 流程圖 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-amber-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-amber-200 flex items-center gap-2">
+          <span class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded-full">4</span>
+          研究框架流程圖
+        </h2>
+        <div class="bg-white rounded-lg border border-slate-200 p-4 overflow-x-auto">
+          <pre class="mermaid">
+graph TD
+    A[研究缺口：Chen 2026 排除酷兒群體] --> B[Problem：關係展演性維度在酷兒脈絡下是否成立？]
+    B --> C[Aim：檢視關係展演性維度是否需要修正]
+    C --> D1[Objective 1：描述與異性戀樣本的異同]
+    C --> D2[Objective 2：關係展演性在同性伴侶脈絡的重新詮釋]
+    C --> D3[Objective 3：提出維度修正或擴展]
+    D1 --> E[構念：Relational Performativity／Queer Relationality／Surveillance Symmetry]
+    D2 --> E
+    D3 --> F[方法：質化深度訪談，可能 dyadic]
+    E --> F
+    F --> G[資料蒐集：酷兒女性，理想含伴侶雙方]
+    G --> H[分析：九層框架主題分析]
+    H --> I[預期貢獻：修正關係展演性維度]
+          </pre>
+        </div>
+      </section>
+
+      <!-- 5. 版本紀錄 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-cyan-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-cyan-200 flex items-center gap-2">
+          <span class="bg-cyan-600 text-white text-xs px-2.5 py-1 rounded-full">5</span>
+          版本紀錄
+        </h2>
+        <p class="text-xs text-slate-400 mb-3"><i class="fa-brands fa-github mr-1"></i>還沒正式建 git repo，這裡先用表格示意；建了 repo 之後這張表格會被 <code class="bg-slate-100 px-1 rounded">git log</code> 取代</p>
+        <table class="w-full text-sm text-left text-slate-700">
+          <thead class="text-xs text-slate-500 uppercase border-b border-slate-300">
+            <tr>
+              <th class="py-2 pr-4">版本</th>
+              <th class="py-2 pr-4">日期</th>
+              <th class="py-2">異動摘要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-slate-200">
+              <td class="py-2 pr-4 font-semibold">v1</td>
+              <td class="py-2 pr-4">2026-09-24</td>
+              <td class="py-2">Stage C 首次產出：依 Stage A 評判縮小 Aim 範圍至關係展演性維度，規劃框架四項決策＋對照參考＋流程圖</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 6. 研究筆記 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-dashed border-slate-300 border-l-4 border-l-rose-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-rose-200 flex items-center gap-2">
+          <span class="bg-rose-600 text-white text-xs px-2.5 py-1 rounded-full">6</span>
+          研究筆記
+        </h2>
+        <p class="text-xs text-rose-400 mb-2 uppercase tracking-wide">你自己持續累積的地方，之後接上 git 每次編輯直接 commit</p>
+        <p class="text-slate-500 italic leading-relaxed">（在這裡直接寫下你邊看邊想到的東西）</p>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+  function toggleHighlight() {
+    document.body.classList.toggle('keyword-highlight');
+    const btn = document.getElementById('highlightToggleBtn');
+    const active = document.body.classList.contains('keyword-highlight');
+    btn.classList.toggle('bg-amber-100', active);
+    btn.classList.toggle('text-amber-900', active);
+    btn.classList.toggle('border-amber-400', active);
+    btn.classList.toggle('bg-slate-800', !active);
+    btn.classList.toggle('text-slate-200', !active);
+    btn.classList.toggle('border-slate-700', !active);
+  }
+</script>
+</body>
+</html>

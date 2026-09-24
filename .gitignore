@@ -1,0 +1,5 @@
+# 論文原文不放進 repo（著作權），只留在本機
+*.pdf
+
+# 課程教材（他人著作），只留在本機
+QDS Critical Form_Sample.doc
