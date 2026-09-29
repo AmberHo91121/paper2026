@@ -7,7 +7,7 @@
 
 ## 1. 資料來源
 
-- **表單結構**：[QDS Critical Form_Sample.doc](../2026_NTUSTcourse/質化設計研究_唐玄輝/QDS%20Critical%20Form_Sample.doc)——7 個頂層欄位：Title/Author(s)、Scope of Research and Major Background、Research Problem(s) and Objectives、Methodology and Steps、Findings and related Supports、Significance and Learnings、Questions
+- **表單結構**：[QDS Critical Form_Sample.doc](../../2026_NTUSTcourse/質化設計研究_唐玄輝/QDS%20Critical%20Form_Sample.doc)——7 個頂層欄位：Title/Author(s)、Scope of Research and Major Background、Research Problem(s) and Objectives、Methodology and Steps、Findings and related Supports、Significance and Learnings、Questions
 - **填寫規則**：老師課程講義 [Critical Form 閱讀論文的秘訣](https://drhhtang-pixel.github.io/2026-QDS/week03/#5)，你已經把規則濃縮成本次訊息裡的重點
 - **視覺樣板參考**：同一份講義頁面的實作——Tailwind CSS（CDN）＋ FontAwesome、每個 section 一張卡片、頂部搜尋列（即時過濾卡片內容）、一個「斜體橘色高亮」切換鈕（把內容裡標記為關鍵字的 `<em>` 文字切換成橘色斜體＋淺橘底色）
 

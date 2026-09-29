@@ -150,7 +150,7 @@
     const link = paper.doi ? `https://doi.org/${paper.doi}` : paper.url;
     if (link) { $('#doiBtn').href = link; $('#doiBtn span').textContent = paper.doi ? 'DOI' : '原始連結'; }
     else $('#doiBtn').remove();
-    $('#pdfBtn').href = `../../${paper.pdf}`;
+    $('#pdfBtn').href = `../${paper.pdf}`;
     $('#copyApa').addEventListener('click', copyApa);
   }
 

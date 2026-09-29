@@ -1,9 +1,29 @@
-# 論文原文不放進 repo（著作權），只留在本機
-*.pdf
-
-# 課程教材（他人著作），只留在本機
-QDS Critical Form_Sample.doc
+# 白名單：預設全部不追蹤，只列出要進 git 的資料夾
+/*
+!/.gitignore
+!/README.md
+!/index.html
+!/research-workflow/
+!/2026_intimateData/
+!/2026_paper_interfaceDisconnection/
 
 # 私有資料夾：任何層級的 keepPrivate 都不可進 git
 keepPrivate/
 **/keepPrivate/
+
+# 論文原文與課程教材不進 git（著作權），只留本機
+*.pdf
+*.doc
+*.docx
+*.xpi
+
+# 私有／本機專用內容（含 StyTrix 訪談分析、含私有路徑的盤點檔）
+research-workflow/洞見萃取_StyTrix試跑/
+research-workflow/文獻盤點總表.md
+
+# 密鑰
+credentials.json
+token.json
+.env
+.env.*
+*.env.txt
