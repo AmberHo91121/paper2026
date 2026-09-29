@@ -61,7 +61,8 @@
       "doi": "10.1145/3313831.3376471",
       "license": "ACM",
       "licenseKind": "restricted",
-      "pdf": "3313831.3376471.pdf"
+      "pdf": "3313831.3376471.pdf",
+      "translation": "translations/CampoWoytuk_2020_中文摘要整理.md"
     },
     {
       "id": "CampoWoytuk2023",
@@ -83,7 +84,8 @@
       "doi": "10.1145/3563657.3595966",
       "license": "ACM",
       "licenseKind": "restricted",
-      "pdf": "3563657.3595966.pdf"
+      "pdf": "3563657.3595966.pdf",
+      "translation": "translations/CampoWoytuk_2023_中文摘要整理.md"
     },
     {
       "id": "CampoWoytuk2025",
@@ -110,7 +112,8 @@
       "doi": "10.1145/3706598.3713466",
       "license": "CC BY-NC",
       "licenseKind": "cc-by-nc",
-      "pdf": "3706598.3713466.pdf"
+      "pdf": "3706598.3713466.pdf",
+      "translation": "translations/CampoWoytuk_2025_中文摘要整理.md"
     },
     {
       "id": "Cao2024",
@@ -132,7 +135,8 @@
       "doi": "10.1145/3613904.3642042",
       "license": "CC BY",
       "licenseKind": "cc-by",
-      "pdf": "3613904.3642042.pdf"
+      "pdf": "3613904.3642042.pdf",
+      "translation": "translations/Cao_2024_中文摘要整理.md"
     },
     {
       "id": "Chen2026",
@@ -214,7 +218,8 @@
       "doi": "10.1145/3546155.3546646",
       "license": "CC BY",
       "licenseKind": "cc-by",
-      "pdf": "3546155.3546646.pdf"
+      "pdf": "3546155.3546646.pdf",
+      "translation": "translations/GomezOrtega_2022_中文摘要整理.md"
     },
     {
       "id": "Grimme2024",
@@ -235,7 +240,8 @@
       "doi": "10.1145/3613904.3642851",
       "license": "ACM",
       "licenseKind": "restricted",
-      "pdf": "3613904.3642851.pdf"
+      "pdf": "3613904.3642851.pdf",
+      "translation": "translations/Grimme_2024_中文摘要整理.md"
     },
     {
       "id": "Hudig2025",
@@ -293,7 +299,8 @@
       "doi": "10.1145/3613904.3642882",
       "license": "ACM",
       "licenseKind": "restricted",
-      "pdf": "3613904.3642882.pdf"
+      "pdf": "3613904.3642882.pdf",
+      "translation": "translations/Jain_2024_中文摘要整理.md"
     },
     {
       "id": "Kang2025",
@@ -356,7 +363,8 @@
       "doi": "10.1145/3411764.3445132",
       "license": "ACM",
       "licenseKind": "restricted",
-      "pdf": "3411764.3445132.pdf"
+      "pdf": "3411764.3445132.pdf",
+      "translation": "translations/Mehrnezhad_2021_中文摘要整理.md"
     },
     {
       "id": "Olyanasab2024",
@@ -398,7 +406,8 @@
       "doi": "10.1145/3613904.3642691",
       "license": "CC BY-NC",
       "licenseKind": "cc-by-nc",
-      "pdf": "3613904.3642691.pdf"
+      "pdf": "3613904.3642691.pdf",
+      "translation": "translations/Park_2024_中文摘要整理.md"
     },
     {
       "id": "PitDosSantos2024",
