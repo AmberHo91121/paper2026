@@ -154,7 +154,12 @@
       "license": "CC BY 4.0",
       "licenseKind": "cc-by",
       "pdf": "Chen_2026_intimate_data_performativity_Taiwanese_women_menstrual_tracking.pdf",
-      "translation": "translations/Chen_2026_中文摘要整理.md"
+      "translation": "translations/Chen_2026_中文摘要整理.md",
+      "criticalForm": {
+        "path": "papers/critical-form/Chen2026/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      },
+      "notes": "papers/critical-form/Chen2026/筆記.md"
     },
     {
       "id": "Chowdhury2025",
