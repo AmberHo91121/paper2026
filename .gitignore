@@ -1,29 +1,48 @@
-# 白名單：預設全部不追蹤，只列出要進 git 的資料夾
-/*
-!/.gitignore
-!/README.md
-!/index.html
-!/research-workflow/
-!/2026_intimateData/
-!/2026_paper_interfaceDisconnection/
+# 原則：非機密、非 keepPrivate 的內容預設都進 git；下列為例外（黑名單）
 
-# 私有資料夾：任何層級的 keepPrivate 都不可進 git
+# ── 私有：任何層級的 keepPrivate 都不可進 git ──
 keepPrivate/
 **/keepPrivate/
 
-# 論文原文與課程教材不進 git（著作權），只留本機
-*.pdf
-*.doc
-*.docx
-*.xpi
-
-# 私有／本機專用內容（含 StyTrix 訪談分析、含私有路徑的盤點檔）
-research-workflow/洞見萃取_StyTrix試跑/
-research-workflow/文獻盤點總表.md
-
-# 密鑰
+# ── 機密／密鑰／本機設定 ──
 credentials.json
 token.json
 .env
 .env.*
 *.env.txt
+*.pem
+*.key
+.claude/
+research-workflow/文獻盤點總表.md
+research-workflow/洞見萃取_StyTrix試跑/
+
+# ── 含真人訪談／案件資料，視為機密（如需公開請自行移出此行）──
+2026_DITL_SBPxAI/testDB/
+
+# ── 獨立專案（自有 git repo，不重複收錄）──
+2026_DITL_SBPxAI/SBP_V1/
+
+# ── 論文原文與課程教材（著作權），只留本機 ──
+*.pdf
+*.doc
+QDS_Critical_Form_*.docx
+
+# ── 建置產物／相依套件／暫存 ──
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.vercel/
+test-results/
+playwright-report/
+.DS_Store
+Thumbs.db
+
+# ── 大型媒體與壓縮檔 ──
+*.mp4
+*.mov
+*.webm
+*.prproj
+*.zip
+*.xpi
+Adobe Premiere Pro Audio Previews/

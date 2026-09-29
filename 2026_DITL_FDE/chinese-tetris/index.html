@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文俄羅斯方塊</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: radial-gradient(ellipse at center, #1a0a3e 0%, #0a0a1a 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', serif;
+  color: #f0e6d3;
+  user-select: none;
+}
+#gameContainer {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 20px;
+}
+canvas { display: block; }
+#gameCanvas {
+  border: 2px solid #c9a227;
+  background: #050510;
+  box-shadow: 0 0 40px rgba(201,162,39,0.4), inset 0 0 20px rgba(0,0,0,0.5);
+}
+#sidePanel {
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel-box {
+  background: rgba(201,162,39,0.08);
+  border: 1px solid rgba(201,162,39,0.5);
+  border-radius: 6px;
+  padding: 12px;
+}
+.panel-title {
+  font-size: 13px;
+  color: #c9a227;
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: 3px;
+  border-bottom: 1px solid rgba(201,162,39,0.3);
+  padding-bottom: 6px;
+}
+.score-value {
+  font-size: 26px;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(201,162,39,0.6);
+}
+#nextCanvas {
+  display: block;
+  margin: 4px auto 0;
+}
+.controls {
+  font-size: 12px;
+  line-height: 2;
+  color: #aaa;
+}
+.controls strong { color: #c9a227; }
+#wordDisplay {
+  min-height: 36px;
+  font-size: 20px;
+  text-align: center;
+  color: #ffdd44;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-shadow: 0 0 12px rgba(255,221,68,0.8);
+  transition: all 0.3s;
+}
+#wordLabel {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  margin-top: 2px;
+}
+#comboDisplay {
+  font-size: 13px;
+  text-align: center;
+  color: #ff8c42;
+  min-height: 20px;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <canvas id="gameCanvas" width="400" height="800"></canvas>
+  <div id="sidePanel">
+    <div class="panel-box">
+      <div class="panel-title">分 數</div>
+      <div class="score-value" id="scoreDisplay">0</div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">等 級</div>
+      <div class="score-value" id="levelDisplay">1</div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">消除行數</div>
+      <div class="score-value" id="linesDisplay">0</div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">下一個</div>
+      <canvas id="nextCanvas" width="140" height="110"></canvas>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">詞語消除</div>
+      <div id="wordDisplay"></div>
+      <div id="wordLabel">詞語會自動消除</div>
+      <div id="comboDisplay"></div>
+    </div>
+    <div class="panel-box controls">
+      <strong>← →</strong> 左右移動<br>
+      <strong>↑</strong> 旋轉方塊<br>
+      <strong>↓</strong> 加速下落<br>
+      <strong>空白鍵</strong> 直接落下<br>
+      <strong>P</strong> 暫停遊戲<br>
+      <strong>Enter</strong> 重新開始
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 詞語資料庫 ====================
+const WORDS_LIST = [
+  // 2字詞
+  '人生','人心','人文','人工','人才','人間','人馬','人力',
+  '天下','天地','天才','天空','天年','天心','天光','天水',
+  '地上','地心','地方','地球','大地','山地','水地',
+  '大人','大學','大地','大方','大成','大才','大力','大心',
+  '小人','小學','小心','小方',
+  '中心','中文','中學','中人','中才','中力',
+  '日子','日月','日光','日記','日文','日工',
+  '月光','月亮','月下','水月','山月',
+  '山水','山頂','山地','山心','水山',
+  '水果','水光','水力','水文','水人',
+  '文字','文化','文明','文人','文武','文學',
+  '字文',
+  '美術','美麗','美學','美感','美好','美人','美文','美工',
+  '科學','語言','歷史',
+  '生活','生命','生人','生力','生學',
+  '工作','工人','工學','工力',
+  '學習','學生','學力','學文',
+  '教育','家庭','家人',
+  '朋友','愛情','友情','感情','心情',
+  '心力','心學','心火','心血','心光','心文','心地','心人','心才','心水',
+  '夢想','希望','快樂','快感',
+  '幸福','健康','健美','勇敢','智慧',
+  '力量','功力','力學','力行','力士','力氣','力道','力文',
+  '氣力','氣象','氣文',
+  '努力','成功','成長','成才','成人','成學',
+  '失敗','機會','改變','創造','發現','旅行',
+  '故事','英雄','魔法','奇蹟',
+  '彩虹','星星','太陽','海洋','森林','花朵',
+  '春天','夏天','秋天','冬天',
+  '光明','光年','光文','光人',
+  '自由','自然','自學','自力',
+  '平等','善良','誠實','和平',
+  '年代','年功','年力','年學','方法','方向',
+  '時間','空間','世界','宇宙',
+  '天才','才能','能力','才子','才學','才人','才文','才力',
+  '靈魂','魄力',
+  '武力','文武','天武',
+  '日學','月學',
+  '金光','銀光','水光',
+  '火光','火力','火人','火文',
+  '風光','風力','風文',
+  '山光','水光','天光',
+  '學文','學力','學人','學才',
+  '生文','文生',
+  '地文','地力','地水','地人',
+  // 3字詞
+  '小朋友','大自然','人工智','大學生','中學生',
+  '大人才','小人物','天才生','學文才',
+  // 4字詞
+  '天下無敵','人才輩出','成功之道',
+];
+
+const WORD_SET = new Set(WORDS_LIST);
+
+// Build character pool from word dictionary
+const CHAR_POOL_RAW = [...new Set(WORDS_LIST.join(''))];
+// Weight common chars higher for more word formation
+const CHAR_WEIGHTS = {};
+WORDS_LIST.join('').split('').forEach(ch => {
+  CHAR_WEIGHTS[ch] = (CHAR_WEIGHTS[ch] || 0) + 1;
+});
+const WEIGHTED_POOL = [];
+CHAR_POOL_RAW.forEach(ch => {
+  const w = Math.ceil(CHAR_WEIGHTS[ch] / 2);
+  for (let i = 0; i < w; i++) WEIGHTED_POOL.push(ch);
+});
+
+// ==================== 遊戲常數 ====================
+const BOARD_W = 10;
+const BOARD_H = 20;
+const CELL = 40;
+
+const PIECE_TYPES = [
+  {
+    name: 'I',
+    color: '#00c8ff',
+    glow: '#00c8ff',
+    cells: [[0,0],[0,1],[0,2],[0,3]],
+  },
+  {
+    name: 'O',
+    color: '#f7c948',
+    glow: '#f7c948',
+    cells: [[0,0],[0,1],[1,0],[1,1]],
+  },
+  {
+    name: 'T',
+    color: '#b44be1',
+    glow: '#b44be1',
+    cells: [[0,1],[1,0],[1,1],[1,2]],
+  },
+  {
+    name: 'S',
+    color: '#4be155',
+    glow: '#4be155',
+    cells: [[0,1],[0,2],[1,0],[1,1]],
+  },
+  {
+    name: 'Z',
+    color: '#e14b4b',
+    glow: '#e14b4b',
+    cells: [[0,0],[0,1],[1,1],[1,2]],
+  },
+  {
+    name: 'J',
+    color: '#4b7ae1',
+    glow: '#4b7ae1',
+    cells: [[0,0],[1,0],[1,1],[1,2]],
+  },
+  {
+    name: 'L',
+    color: '#e1874b',
+    glow: '#e1874b',
+    cells: [[0,2],[1,0],[1,1],[1,2]],
+  },
+];
+
+// ==================== 狀態變數 ====================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const nextCanvas = document.getElementById('nextCanvas');
+const nextCtx = nextCanvas.getContext('2d');
+
+let board, currentPiece, nextPiece;
+let score, level, linesCount, gameOver, paused;
+let dropInterval, dropCounter, lastTime;
+let removing, wordCheckState, wordCheckTimer;
+let foundWordsHistory = [];
+let comboCount = 0;
+let flashTime = 0;
+
+// ==================== 初始化 ====================
+function startGame() {
+  board = Array.from({ length: BOARD_H }, () => Array(BOARD_W).fill(null));
+  score = 0; level = 1; linesCount = 0;
+  gameOver = false; paused = false;
+  removing = false;
+  wordCheckState = 'idle';
+  wordCheckTimer = 0;
+  dropInterval = 800; dropCounter = 0; lastTime = 0;
+  foundWordsHistory = [];
+  comboCount = 0;
+  document.getElementById('scoreDisplay').textContent = '0';
+  document.getElementById('levelDisplay').textContent = '1';
+  document.getElementById('linesDisplay').textContent = '0';
+  document.getElementById('wordDisplay').textContent = '';
+  document.getElementById('comboDisplay').textContent = '';
+
+  nextPiece = createPiece();
+  spawnPiece();
+}
+
+function createPiece() {
+  const type = PIECE_TYPES[Math.floor(Math.random() * PIECE_TYPES.length)];
+  return {
+    name: type.name,
+    color: type.color,
+    glow: type.glow,
+    cells: type.cells.map(c => [...c]),
+    chars: type.cells.map(() => WEIGHTED_POOL[Math.floor(Math.random() * WEIGHTED_POOL.length)]),
+    row: 0,
+    col: Math.floor(BOARD_W / 2) - 1,
+  };
+}
+
+function spawnPiece() {
+  currentPiece = nextPiece;
+  nextPiece = createPiece();
+  drawNextPiece();
+  if (!isValid(currentPiece, 0, 0)) {
+    gameOver = true;
+  }
+}
+
+// ==================== 碰撞檢測 ====================
+function isValid(piece, dr, dc, altCells) {
+  const cells = altCells || piece.cells;
+  for (const [r, c] of cells) {
+    const nr = r + piece.row + dr;
+    const nc = c + piece.col + dc;
+    if (nr < 0 || nr >= BOARD_H || nc < 0 || nc >= BOARD_W) return false;
+    if (board[nr][nc]) return false;
+  }
+  return true;
+}
+
+// ==================== 旋轉 ====================
+function rotateCW(cells) {
+  const maxR = Math.max(...cells.map(([r]) => r));
+  const rotated = cells.map(([r, c]) => [c, maxR - r]);
+  const minR = Math.min(...rotated.map(([r]) => r));
+  const minC = Math.min(...rotated.map(([, c]) => c));
+  return rotated.map(([r, c]) => [r - minR, c - minC]);
+}
+
+function tryRotate() {
+  const newCells = rotateCW(currentPiece.cells);
+  // Try normal rotation and wall kicks
+  const kicks = [0, 1, -1, 2, -2];
+  for (const k of kicks) {
+    if (isValid(currentPiece, 0, k, newCells)) {
+      currentPiece.cells = newCells;
+      currentPiece.col += k;
+      return;
+    }
+  }
+}
+
+// ==================== 方塊落地 ====================
+function lockPiece() {
+  const positions = currentPiece.cells.map(([r, c]) => [
+    r + currentPiece.row,
+    c + currentPiece.col,
+  ]);
+  positions.forEach(([r, c], i) => {
+    board[r][c] = {
+      char: currentPiece.chars[i],
+      color: currentPiece.color,
+      glow: currentPiece.glow,
+      highlight: false,
+      highlightTime: 0,
+    };
+  });
+  removing = true;
+  wordCheckState = 'detecting';
+  wordCheckTimer = 0;
+  comboCount = 0;
+}
+
+function moveDown() {
+  if (removing) return;
+  if (isValid(currentPiece, 1, 0)) {
+    currentPiece.row++;
+  } else {
+    lockPiece();
+  }
+}
+
+function hardDrop() {
+  if (removing) return;
+  let dropped = 0;
+  while (isValid(currentPiece, 1, 0)) {
+    currentPiece.row++;
+    dropped++;
+  }
+  score += dropped * 2;
+  lockPiece();
+  updateUI();
+}
+
+// ==================== 消行邏輯 ====================
+function clearFullLines() {
+  let cleared = 0;
+  for (let r = BOARD_H - 1; r >= 0; r--) {
+    if (board[r].every(cell => cell !== null && !cell.highlight)) {
+      board.splice(r, 1);
+      board.unshift(Array(BOARD_W).fill(null));
+      cleared++;
+      r++;
+    }
+  }
+  return cleared;
+}
+
+// ==================== 詞語檢測 ====================
+function detectWords() {
+  const toMark = new Set();
+  const found = [];
+
+  // Horizontal scan (left to right)
+  for (let r = 0; r < BOARD_H; r++) {
+    for (let c = 0; c < BOARD_W; c++) {
+      for (let len = 4; len >= 2; len--) {
+        if (c + len > BOARD_W) continue;
+        let word = '';
+        let ok = true;
+        for (let i = 0; i < len; i++) {
+          const cell = board[r][c + i];
+          if (!cell || cell.highlight) { ok = false; break; }
+          word += cell.char;
+        }
+        if (ok && WORD_SET.has(word)) {
+          found.push(word);
+          for (let i = 0; i < len; i++) toMark.add(`${r},${c + i}`);
+        }
+      }
+    }
+  }
+
+  // Vertical scan (top to bottom)
+  for (let c = 0; c < BOARD_W; c++) {
+    for (let r = 0; r < BOARD_H; r++) {
+      for (let len = 4; len >= 2; len--) {
+        if (r + len > BOARD_H) continue;
+        let word = '';
+        let ok = true;
+        for (let i = 0; i < len; i++) {
+          const cell = board[r + i][c];
+          if (!cell || cell.highlight) { ok = false; break; }
+          word += board[r + i][c].char;
+        }
+        if (ok && WORD_SET.has(word)) {
+          found.push(word);
+          for (let i = 0; i < len; i++) toMark.add(`${r + i},${c}`);
+        }
+      }
+    }
+  }
+
+  return { toMark, found };
+}
+
+function markForRemoval(toMark) {
+  toMark.forEach(key => {
+    const [r, c] = key.split(',').map(Number);
+    if (board[r][c]) {
+      board[r][c].highlight = true;
+      board[r][c].highlightTime = 0;
+    }
+  });
+}
+
+function removeHighlighted() {
+  let count = 0;
+  for (let r = 0; r < BOARD_H; r++) {
+    for (let c = 0; c < BOARD_W; c++) {
+      if (board[r][c]?.highlight) {
+        board[r][c] = null;
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+function applyGravity() {
+  for (let c = 0; c < BOARD_W; c++) {
+    let write = BOARD_H - 1;
+    for (let r = BOARD_H - 1; r >= 0; r--) {
+      if (board[r][c] !== null) {
+        board[write][c] = board[r][c];
+        if (write !== r) board[r][c] = null;
+        write--;
+      }
+    }
+    while (write >= 0) { board[write][c] = null; write--; }
+  }
+}
+
+// ==================== 詞語消除狀態機 ====================
+function updateWordCheck(delta) {
+  wordCheckTimer += delta;
+  flashTime += delta;
+
+  if (wordCheckState === 'detecting') {
+    // First: clear full lines
+    const linesCleared = clearFullLines();
+
+    // Then find words
+    const { toMark, found } = detectWords();
+    markForRemoval(toMark);
+
+    const wordCells = toMark.size;
+
+    if (linesCleared > 0) {
+      linesCount += linesCleared;
+      document.getElementById('linesDisplay').textContent = linesCount;
+    }
+
+    updateScore(linesCleared, wordCells);
+
+    if (wordCells > 0) {
+      comboCount++;
+      foundWordsHistory = found;
+      showFoundWords(found);
+      wordCheckState = 'flashing';
+      wordCheckTimer = 0;
+    } else if (linesCleared > 0) {
+      // Lines cleared but no words — continue gravity check
+      applyGravity();
+      wordCheckState = 'detecting';
+      wordCheckTimer = 0;
+    } else {
+      // Nothing to do
+      wordCheckState = 'idle';
+      removing = false;
+      spawnPiece();
+    }
+
+  } else if (wordCheckState === 'flashing') {
+    if (wordCheckTimer > 550) {
+      removeHighlighted();
+      applyGravity();
+      wordCheckState = 'detecting'; // Check for chain reactions
+      wordCheckTimer = 0;
+    }
+  }
+}
+
+function showFoundWords(words) {
+  const unique = [...new Set(words)];
+  const el = document.getElementById('wordDisplay');
+  el.textContent = unique.join(' ');
+  if (comboCount > 1) {
+    document.getElementById('comboDisplay').textContent = `連鎖 ×${comboCount}！`;
+  } else {
+    document.getElementById('comboDisplay').textContent = '';
+  }
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => {
+    el.textContent = '';
+    document.getElementById('comboDisplay').textContent = '';
+  }, 2500);
+}
+
+// ==================== 計分 ====================
+const LINE_POINTS = [0, 100, 300, 500, 800];
+
+function updateScore(linesCleared, wordCells) {
+  const lineBonus = (LINE_POINTS[Math.min(linesCleared, 4)] || 0) * level;
+  const wordBonus = wordCells * 50 * level * (comboCount > 1 ? comboCount : 1);
+  score += lineBonus + wordBonus;
+  level = Math.floor(linesCount / 10) + 1;
+  dropInterval = Math.max(80, 800 - (level - 1) * 70);
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('levelDisplay').textContent = level;
+}
+
+// ==================== 繪製 ====================
+function drawCell(ctx, x, y, size, cell, alpha) {
+  if (!cell) return;
+  ctx.save();
+  if (alpha !== undefined) ctx.globalAlpha = alpha;
+
+  const isFlash = cell.highlight;
+  const flashPulse = isFlash ? (Math.sin(flashTime / 80) * 0.5 + 0.5) : 0;
+
+  // Background fill
+  ctx.fillStyle = isFlash
+    ? `hsl(${50 + flashPulse * 30}, 100%, ${50 + flashPulse * 20}%)`
+    : cell.color;
+  ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
+
+  // Shine gradient
+  const grad = ctx.createLinearGradient(x, y, x + size, y + size);
+  grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+  grad.addColorStop(0.5, 'rgba(255,255,255,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.25)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
+
+  // Glow border for highlighted cells
+  if (isFlash) {
+    ctx.shadowColor = '#ffdd44';
+    ctx.shadowBlur = 15 + flashPulse * 10;
+    ctx.strokeStyle = `rgba(255,255,100,${0.6 + flashPulse * 0.4})`;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x + 2, y + 2, size - 4, size - 4);
+  }
+  ctx.shadowBlur = 0;
+
+  // Chinese character
+  ctx.fillStyle = isFlash ? '#000' : '#fff';
+  ctx.font = `bold ${Math.floor(size * 0.54)}px 'Microsoft JhengHei', serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (!isFlash) {
+    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur = 4;
+  }
+  ctx.fillText(cell.char, x + size / 2, y + size / 2 + 1);
+
+  ctx.restore();
+}
+
+function drawGhost() {
+  if (!currentPiece || removing) return;
+  let ghostRow = currentPiece.row;
+  while (isValid(currentPiece, ghostRow - currentPiece.row + 1, 0)) ghostRow++;
+  if (ghostRow === currentPiece.row) return;
+
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  currentPiece.cells.forEach(([r, c], i) => {
+    const br = r + ghostRow;
+    const bc = c + currentPiece.col;
+    if (br >= 0 && br < BOARD_H && bc >= 0 && bc < BOARD_W) {
+      ctx.fillStyle = currentPiece.color;
+      ctx.fillRect(bc * CELL + 1, br * CELL + 1, CELL - 2, CELL - 2);
+      ctx.fillStyle = '#fff';
+      ctx.font = `bold ${Math.floor(CELL * 0.54)}px 'Microsoft JhengHei', serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(currentPiece.chars[i], bc * CELL + CELL / 2, br * CELL + CELL / 2 + 1);
+    }
+  });
+  ctx.restore();
+}
+
+function drawBoard() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(100,100,180,0.08)';
+  ctx.lineWidth = 1;
+  for (let r = 0; r <= BOARD_H; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r * CELL); ctx.lineTo(BOARD_W * CELL, r * CELL); ctx.stroke();
+  }
+  for (let c = 0; c <= BOARD_W; c++) {
+    ctx.beginPath(); ctx.moveTo(c * CELL, 0); ctx.lineTo(c * CELL, BOARD_H * CELL); ctx.stroke();
+  }
+
+  // Board cells
+  for (let r = 0; r < BOARD_H; r++) {
+    for (let c = 0; c < BOARD_W; c++) {
+      if (board[r][c]) drawCell(ctx, c * CELL, r * CELL, CELL, board[r][c]);
+    }
+  }
+
+  // Ghost
+  drawGhost();
+
+  // Current piece
+  if (currentPiece && !removing) {
+    currentPiece.cells.forEach(([r, c], i) => {
+      const br = r + currentPiece.row;
+      const bc = c + currentPiece.col;
+      if (br >= 0 && br < BOARD_H) {
+        drawCell(ctx, bc * CELL, br * CELL, CELL, {
+          char: currentPiece.chars[i],
+          color: currentPiece.color,
+          glow: currentPiece.glow,
+          highlight: false,
+        });
+      }
+    });
+  }
+
+  // Overlays
+  if (gameOver) {
+    ctx.fillStyle = 'rgba(0,0,0,0.78)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#c9a227';
+    ctx.font = 'bold 52px Microsoft JhengHei';
+    ctx.shadowColor = '#c9a227';
+    ctx.shadowBlur = 20;
+    ctx.fillText('遊戲結束', canvas.width / 2, canvas.height / 2 - 50);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#eee';
+    ctx.font = '24px Microsoft JhengHei';
+    ctx.fillText(`最終分數：${score}`, canvas.width / 2, canvas.height / 2 + 10);
+    ctx.fillStyle = '#aaa';
+    ctx.font = '18px Microsoft JhengHei';
+    ctx.fillText('按 Enter 重新開始', canvas.width / 2, canvas.height / 2 + 50);
+  }
+
+  if (paused && !gameOver) {
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#c9a227';
+    ctx.font = 'bold 52px Microsoft JhengHei';
+    ctx.shadowColor = '#c9a227';
+    ctx.shadowBlur = 20;
+    ctx.fillText('暫 停', canvas.width / 2, canvas.height / 2);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#aaa';
+    ctx.font = '18px Microsoft JhengHei';
+    ctx.fillText('按 P 繼續', canvas.width / 2, canvas.height / 2 + 50);
+  }
+}
+
+function drawNextPiece() {
+  nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+  if (!nextPiece) return;
+  const sz = 28;
+  const rows = Math.max(...nextPiece.cells.map(([r]) => r)) + 1;
+  const cols = Math.max(...nextPiece.cells.map(([, c]) => c)) + 1;
+  const ox = (nextCanvas.width - cols * sz) / 2;
+  const oy = (nextCanvas.height - rows * sz) / 2;
+  nextPiece.cells.forEach(([r, c], i) => {
+    drawCell(nextCtx, ox + c * sz, oy + r * sz, sz, {
+      char: nextPiece.chars[i],
+      color: nextPiece.color,
+      highlight: false,
+    });
+  });
+}
+
+// ==================== 主迴圈 ====================
+function gameLoop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const delta = Math.min(timestamp - lastTime, 100); // cap delta to avoid huge jumps
+  lastTime = timestamp;
+
+  if (!gameOver && !paused) {
+    if (removing) {
+      updateWordCheck(delta);
+    } else {
+      dropCounter += delta;
+      if (dropCounter >= dropInterval) {
+        dropCounter = 0;
+        moveDown();
+      }
+    }
+  }
+
+  drawBoard();
+  requestAnimationFrame(gameLoop);
+}
+
+// ==================== 鍵盤輸入 ====================
+const keysDown = new Set();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (gameOver) startGame();
+    return;
+  }
+  if (e.key === 'p' || e.key === 'P') {
+    if (!gameOver) paused = !paused;
+    return;
+  }
+  if (gameOver || paused) return;
+
+  switch (e.key) {
+    case 'ArrowLeft':
+      if (!removing && isValid(currentPiece, 0, -1)) currentPiece.col--;
+      e.preventDefault(); break;
+    case 'ArrowRight':
+      if (!removing && isValid(currentPiece, 0, 1)) currentPiece.col++;
+      e.preventDefault(); break;
+    case 'ArrowDown':
+      if (!removing) {
+        moveDown();
+        score++;
+        updateUI();
+        dropCounter = 0;
+      }
+      e.preventDefault(); break;
+    case 'ArrowUp':
+      if (!removing) tryRotate();
+      e.preventDefault(); break;
+    case ' ':
+      if (!removing) hardDrop();
+      e.preventDefault(); break;
+  }
+});
+
+// ==================== 啟動 ====================
+startGame();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

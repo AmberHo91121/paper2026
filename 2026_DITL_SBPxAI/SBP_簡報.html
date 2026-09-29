@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI × Service Blueprint 整合分析</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080f1e;--s1:#0f1828;--s2:#162036;--bd:rgba(148,163,184,.1);
+  --tx:#e2e8f0;--mu:#94a3b8;
+  --ac:#6366f1;--cm:#06b6d4;--pr:#a78bfa;--cp:#fbbf24;--cn:#34d399;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei','Segoe UI',sans-serif;
+  font-size:15px;line-height:1.5}
+
+/* Progress */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#6366f1,#06b6d4);transition:width .4s ease;z-index:999}
+
+/* Nav */
+.nav{position:fixed;bottom:22px;z-index:999;width:40px;height:40px;border-radius:50%;
+  background:var(--s2);border:1px solid var(--bd);color:var(--tx);cursor:pointer;
+  font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;user-select:none}
+.nav:hover{background:var(--s1)}
+.nav:disabled{opacity:.25;cursor:default}
+#prevBtn{left:calc(50% - 72px)}
+#nextBtn{right:calc(50% - 72px)}
+#ctr{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:var(--mu);letter-spacing:.08em;z-index:999;pointer-events:none}
+
+/* Slideshow */
+.deck{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:52px 72px 76px;
+  opacity:0;pointer-events:none;will-change:transform,opacity}
+.slide.active{opacity:1;pointer-events:all}
+
+/* Inner scroll */
+.inner{width:100%;max-width:1080px;overflow-y:auto;max-height:calc(100vh - 140px)}
+.inner::-webkit-scrollbar{width:3px}
+.inner::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+
+/* Typography */
+.h1{font-size:26px;font-weight:700;line-height:1.2;margin-bottom:6px}
+.sub{font-size:13px;color:var(--mu);margin-bottom:24px}
+strong{color:var(--tx);font-weight:600}
+em{color:var(--mu);font-style:normal}
+
+/* Tags */
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin:0 3px 3px 0}
+.t-a{background:rgba(99,102,241,.18);color:#a5b4fc;border:1px solid rgba(99,102,241,.35)}
+.t-c{background:rgba(6,182,212,.15);color:#67e8f9;border:1px solid rgba(6,182,212,.3)}
+.t-p{background:rgba(167,139,250,.18);color:#c4b5fd;border:1px solid rgba(167,139,250,.35)}
+.t-w{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}
+.t-ok{background:rgba(52,211,153,.12);color:#6ee7b7;border:1px solid rgba(52,211,153,.25)}
+.t-y{background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.25)}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* Card */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:18px 20px}
+.ct{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cb{font-size:12px;color:#b0bec5;line-height:1.6}
+
+/* List */
+.ul{list-style:none;padding:0}
+.ul li{display:flex;gap:7px;font-size:12px;color:#94a3b8;margin-bottom:7px;line-height:1.5}
+.ul li::before{content:'—';color:var(--ac);flex-shrink:0}
+
+/* Key box */
+.kbox{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.22);
+  border-radius:8px;padding:13px 16px;font-size:12px;color:#c7d2fe;margin-top:14px}
+.kbox.red{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.22);color:#fca5a5}
+.kbox.green{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.22);color:#6ee7b7}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.tbl th{background:var(--s2);color:var(--mu);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--bd);color:#cbd5e1;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.015)}
+
+/* Section slide */
+.sec-slide{text-align:center;background:radial-gradient(ellipse at 50% 40%,rgba(99,102,241,.1) 0%,transparent 65%)}
+.sec-num{font-size:88px;font-weight:900;opacity:.06;line-height:1;color:#fff;margin-bottom:-8px}
+.sec-bar{width:40px;height:3px;border-radius:2px;margin:0 auto 14px}
+.sec-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:44px;font-weight:800;line-height:1.15;margin-bottom:14px}
+.sec-desc{font-size:16px;color:var(--mu);max-width:560px}
+
+/* Timeline */
+.tl{display:flex;min-width:860px;gap:0}
+.tl-item{flex:1;padding:14px 12px;background:var(--s1);border:1px solid var(--bd);border-right:none;font-size:11px}
+.tl-item:first-child{border-radius:8px 0 0 8px}
+.tl-item:last-child{border-right:1px solid var(--bd);border-radius:0 8px 8px 0}
+.tl-y{font-size:12px;font-weight:700;color:var(--ac);margin-bottom:4px}
+.tl-a{font-size:10px;color:var(--mu);margin-bottom:4px}
+.tl-d{font-size:10px;color:#94a3b8;line-height:1.5}
+
+/* SBP Layers */
+.sbp{display:flex;flex-direction:column;gap:2px}
+.layer{padding:11px 18px;border-radius:5px;font-size:12.5px;font-weight:600}
+.line-label{padding:5px 18px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mu);border-top:1px dashed var(--bd)}
+
+/* Breakpoint grid */
+.bpg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.bpc{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:14px;border-left:3px solid}
+.bpc.hi{border-left-color:#34d399}
+.bpc.md{border-left-color:var(--cp)}
+.bpc.lo{border-left-color:#f87171}
+.bpn{font-size:12px;font-weight:700;margin-bottom:5px}
+.bpd{font-size:10.5px;color:var(--mu);line-height:1.5}
+
+/* 2x2 Matrix */
+.mat{display:grid;grid-template-columns:36px 1fr 1fr;grid-template-rows:36px 1fr 1fr;
+  gap:4px;max-width:680px;margin:0 auto}
+.mh{display:flex;align-items:center;justify-content:center;font-size:10px;
+  font-weight:700;color:var(--mu);letter-spacing:.05em}
+.ml{display:flex;align-items:center;justify-content:center;font-size:10px;
+  font-weight:700;color:var(--mu);writing-mode:vertical-rl;text-orientation:mixed}
+.mc{padding:14px;border-radius:8px;border:1px solid}
+.mc-t{font-weight:700;font-size:12px;margin-bottom:5px}
+.mc-d{font-size:11px;color:#94a3b8;line-height:1.5}
+
+/* Flow */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto}
+.fs{flex:1;min-width:110px;background:var(--s1);border:1px solid var(--bd);
+  border-radius:8px;padding:12px 10px;text-align:center}
+.fn{font-size:18px;font-weight:900;color:var(--ac);opacity:.45;line-height:1}
+.ft{font-size:11px;font-weight:600;margin:3px 0;line-height:1.3}
+.fd{font-size:9.5px;color:var(--mu);line-height:1.4}
+.fa{font-size:16px;color:var(--mu);padding:0 6px;display:flex;align-items:center;flex-shrink:0}
+
+/* Spectrum */
+.spec-bar{height:10px;border-radius:5px;background:linear-gradient(90deg,#34d399,#fbbf24,#f87171);margin:16px 0 10px}
+.spec-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--mu);margin-bottom:16px}
+
+/* Conclusion */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cc{background:var(--s1);border-radius:10px;padding:20px;border-top:3px solid}
+.cc.g{border-top-color:#34d399}
+.cc.r{border-top-color:#f87171}
+.ci{display:flex;gap:7px;margin-bottom:9px;font-size:12px;color:#94a3b8;line-height:1.5;align-items:flex-start}
+.ci.g::before{content:'✓';color:#34d399;font-weight:700;flex-shrink:0}
+.ci.r::before{content:'✗';color:#f87171;font-weight:700;flex-shrink:0}
+
+/* Three-tension */
+.tension{display:flex;flex-direction:column;gap:12px}
+.tc{display:grid;grid-template-columns:1fr 44px 1fr;gap:14px;align-items:center;
+  background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px 18px}
+.tc-side-l{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ac);margin-bottom:5px}
+.tc-side-r{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--cm);margin-bottom:5px}
+.tc-txt{font-size:12px;color:#cbd5e1;line-height:1.5}
+.tc-vs{text-align:center;font-size:18px;color:var(--cp)}
+
+/* divider */
+.div{width:100%;height:1px;background:var(--bd);margin:14px 0}
+.note{font-size:10.5px;color:var(--mu);margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+
+/* Title slide */
+.title-slide{text-align:center;background:radial-gradient(ellipse at 50% 35%,rgba(99,102,241,.13) 0%,transparent 68%)}
+.t-main{font-size:50px;font-weight:900;line-height:1.05;
+  background:linear-gradient(135deg,#e2e8f0 30%,#94a3b8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.t-sub{font-size:18px;color:var(--mu);margin:10px 0 28px;font-weight:300}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<div class="deck" id="deck">
+
+<!-- ══ SLIDE 01 TITLE ══ -->
+<div class="slide active title-slide">
+  <div style="max-width:780px">
+    <div style="margin-bottom:20px">
+      <span class="tag t-a">學術研究</span>
+      <span class="tag t-c">商業產品</span>
+      <span class="tag t-p">實務經驗</span>
+    </div>
+    <div class="t-main">AI × Service Blueprint</div>
+    <div class="t-main" style="font-size:30px;margin-top:2px">整合知識庫</div>
+    <div class="t-sub">學術文獻・商業案例・實務經驗 跨類別分析</div>
+    <div class="div" style="max-width:380px;margin:0 auto 20px"></div>
+    <div style="font-size:12px;color:var(--mu);line-height:2">
+      Shostack (1984)・Bitner et al. (2008)・Patrício et al. (2008/2011)・Wirtz et al. (2018)<br>
+      Magyari &amp; Secomandi (2023)・Mortati &amp; Freitas (2026)・NN/g・thehuman2ai.com
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 02 分類 ══ -->
+<div class="slide">
+<div class="inner">
+  <div class="h1">研究範圍與案例分類</div>
+  <div class="sub">三大類別・方法論嚴謹度差異明顯</div>
+  <div class="g3">
+    <div class="card" style="border-top:3px solid var(--ac)">
+      <div class="ct" style="color:#a5b4fc">01 學術研究</div>
+      <ul class="ul">
+        <li>Shostack (1977/1984)</li>
+        <li>Bitner, Ostrom &amp; Morgan (2008)</li>
+        <li>Patrício et al. (2008/2011)</li>
+        <li>Wirtz et al. (2018)</li>
+        <li>Magyari &amp; Secomandi (2023)</li>
+        <li>Mortati &amp; Freitas (2026)</li>
+      </ul>
+      <div style="margin-top:10px"><span class="tag t-ok">同儕審查</span><span class="tag t-ok">完整方法論</span></div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cm)">
+      <div class="ct" style="color:#67e8f9">02 商業產品</div>
+      <ul class="ul">
+        <li>Miro (AI Service Blueprint)</li>
+        <li>UXPressia</li>
+        <li>Creately</li>
+        <li>Smaply / TheyDo / UXPressia</li>
+        <li>thehuman2ai.com（方法論指南）</li>
+      </ul>
+      <div style="margin-top:10px"><span class="tag t-w">產品部落格</span><span class="tag t-w">無公開實證</span></div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pr)">
+      <div class="ct" style="color:#c4b5fd">03 實務經驗</div>
+      <ul class="ul">
+        <li>Nielsen Norman Group</li>
+        <li>Jodi Forlizzi（CMU HCI）</li>
+        <li>Sophia Exintaris（顧問）</li>
+        <li>SI Labs（2026 長文）</li>
+      </ul>
+      <div style="margin-top:10px"><span class="tag t-y">可信度因機構而異</span></div>
+    </div>
+  </div>
+  <div class="kbox" style="margin-top:14px">
+    ⚠ 學術研究談「藍圖該長什麼樣、為什麼有效」；商業產品談「怎麼更快畫出來」——兩者論證基礎不同，引用時不要互相當佐證。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 03 SBP 時間軸 ══ -->
+<div class="slide">
+<div class="inner">
+  <div class="h1">SBP 方法論學術脈絡</div>
+  <div class="sub">先認識 SBP 本身，再討論 AI 如何介入</div>
+  <div style="overflow-x:auto;margin-bottom:16px">
+    <div class="tl">
+      <div class="tl-item">
+        <div class="tl-y">1977–1984</div>
+        <div class="tl-a">Shostack</div>
+        <div class="tl-d">發明「藍圖」概念與四步驟法；確立可視線（~1,800次引用）</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">1988/1989</div>
+        <div class="tl-a">Kingman-Brundage</div>
+        <div class="tl-d">建立三線結構：互動線、能見線、內部互動線（~400次引用）</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">2008</div>
+        <div class="tl-a">Bitner et al.</div>
+        <div class="tl-d">五元件模型成為業界標準；首提「前台科技列」；1,100+ 引用</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">2008–2011</div>
+        <div class="tl-a">Patrício et al.</div>
+        <div class="tl-d">多通路 SEB；三層次 MSD 方法論</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">2018</div>
+        <div class="tl-a">Wirtz et al.</div>
+        <div class="tl-d">服務機器人作為前線行動者；AI 介入的早期框架</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">2024</div>
+        <div class="tl-a">數位共競框架</div>
+        <div class="tl-d">新增「網絡前台泳道」處理平台生態系競合</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-y">2025</div>
+        <div class="tl-a">Magyari &amp; Secomandi</div>
+        <div class="tl-d">藍圖作為 UX 與 ML 工程師溝通的邊界物件</div>
+      </div>
+      <div class="tl-item" style="border-right:1px solid var(--bd);border-radius:0 8px 8px 0">
+        <div class="tl-y">2026</div>
+        <div class="tl-a">Mortati &amp; Freitas</div>
+        <div class="tl-d">人機混合互動四類型框架（純理論，無實證）</div>
+      </div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">從「效率工具」到「體驗設計工具」</div>
+      <div class="cb">Shostack（1984）以效率管理為起點，Bitner et al.（2008）轉為顧客體驗導向，並持續因應多通路、O2O、區塊鏈等新服務型態延伸出變體版本。</div>
+    </div>
+    <div class="card">
+      <div class="ct">⚠ 目前最大的研究缺口</div>
+      <div class="cb">「AI 時代新版藍圖符號系統」目前尚未出現——理論走在方法之前（Mortati &amp; Freitas、Forlizzi），真正被廣泛驗證的新格式還不存在。</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 04 SBP 經典結構 ══ -->
+<div class="slide">
+<div class="inner">
+  <div class="h1">服務藍圖：經典結構</div>
+  <div class="sub">五層架構・三條分界線・三種風險標記（Bitner et al., 2008）</div>
+  <div class="g2" style="gap:20px">
+    <div>
+      <div class="sbp">
+        <div class="layer" style="background:rgba(251,191,36,.1);color:#fde68a">① 實體證據（Physical Evidence）</div>
+        <div class="layer" style="background:rgba(99,102,241,.12);color:#a5b4fc">② 顧客行動（Customer Actions）</div>
+        <div class="line-label">── 互動線（Line of Interaction）──</div>
+        <div class="layer" style="background:rgba(6,182,212,.1);color:#67e8f9">③ 前台員工行動（Onstage）</div>
+        <div class="line-label" style="border-top-color:rgba(6,182,212,.3)">── 能見線（Line of Visibility）──</div>
+        <div class="layer" style="background:rgba(167,139,250,.1);color:#c4b5fd">④ 後台員工行動（Backstage）</div>
+        <div class="line-label" style="border-top-color:rgba(167,139,250,.3)">── 內部互動線（Line of Internal Interaction）──</div>
+        <div class="layer" style="background:rgba(52,211,153,.1);color:#6ee7b7">⑤ 支援流程（Support Processes）</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="ct">三種風險標記（疊加在格子上）</div>
+        <div class="cb">
+          <div style="margin-bottom:7px">🟠 <strong>等待點（W）</strong> — 顧客實際排隊等待的那一刻</div>
+          <div style="margin-bottom:7px">🔴 <strong>失敗點（F）</strong> — 資訊傳遞最容易出錯的環節</div>
+          <div>🟣 <strong>決策點（D）</strong> — 員工需要臨場判斷的環節</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">⚡ AI 時代的延伸問題</div>
+        <div class="cb">Bitner et al.（2008）已預見純數位服務的畫法問題——建議把「前台接觸員工行動」列改為「<strong>前台科技行動</strong>」列，這是後來「AI 行動者」爭論的最早雛形。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 05 斷點分析 ══ -->
+<div class="slide">
+<div class="inner">
+  <div class="h1">SBP 各斷點的 AI 介入觀點</div>
+  <div class="sub">七個斷點對 AI 介入的適合程度並不一樣</div>
+  <div class="bpg">
+    <div class="bpc hi">
+      <div class="bpn">互動線（顧客 ↔ 前台）</div>
+      <div class="bpd">目前 AI 介入最多也最成熟。聊天機器人、語音客服可取代重複性高、規則明確的前台請求。</div>
+      <div style="margin-top:8px"><span class="tag t-ok">高度適合</span></div>
+    </div>
+    <div class="bpc hi">
+      <div class="bpn">能見線（前台 ↔ 後台）</div>
+      <div class="bpd">AI 可把後台進度即時同步給顧客（物流追蹤、審核狀態推播），直接降低顧客焦慮與詢問量。</div>
+      <div style="margin-top:8px"><span class="tag t-ok">高度適合</span></div>
+    </div>
+    <div class="bpc hi">
+      <div class="bpn">內部互動線</div>
+      <div class="bpd">AI 投資報酬率最高：自動工單分派、跨部門資料核對、審核流程初步篩選。</div>
+      <div style="margin-top:8px"><span class="tag t-ok">高度適合</span></div>
+    </div>
+    <div class="bpc md">
+      <div class="bpn">等待點（W）</div>
+      <div class="bpd">AI 排隊預測與資源動態調度——預測等待時間並主動告知，或依即時資料動態調整人力。</div>
+      <div style="margin-top:8px"><span class="tag t-y">部分適合</span></div>
+    </div>
+    <div class="bpc md">
+      <div class="bpn">失敗點（F）</div>
+      <div class="bpd">AI 適合做異常偵測與預警，在問題影響顧客之前先介入（設備故障預測、維修排程）。</div>
+      <div style="margin-top:8px"><span class="tag t-y">部分適合</span></div>
+    </div>
+    <div class="bpc lo">
+      <div class="bpn">決策點（D）⚠</div>
+      <div class="bpd">規則清楚的決策 AI 可代勞，但涉及例外判斷、顧客申訴、跨部門責任歸屬，建議維持人工判斷。</div>
+      <div style="margin-top:8px"><span class="tag t-w">謹慎介入</span></div>
+    </div>
+  </div>
+  <div class="kbox" style="margin-top:14px">
+    💡 AI 只能根據「寫下來的流程」畫藍圖——員工實際的變通做法、非正式的跨部門協調，是 AI 觀察不到、也不該由 AI 決定的。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 06 SEC 學術 ══ -->
+<div class="slide sec-slide">
+  <div class="sec-num">01</div>
+  <div class="sec-bar" style="background:var(--ac)"></div>
+  <div class="sec-label" style="color:var(--ac)">Part 01</div>
+  <div class="sec-title">學術研究</div>
+  <div class="sec-desc">具備完整研究方法、可查證證據的同儕審查文獻</div>
+  <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <span class="tag t-a">Shostack 1984</span>
+    <span class="tag t-a">Bitner et al. 2008</span>
+    <span class="tag t-a">Magyari &amp; Secomandi 2023</span>
+    <span class="tag t-a">Mortati &amp; Freitas 2026</span>
+  </div>
+</div>
+
+<!-- ══ SLIDE 07 Shostack & Bitner ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-a">學術研究</span></div>
+  <div class="h1">奠基文獻：Shostack &amp; Bitner</div>
+  <div class="sub">服務藍圖的起源與標準化</div>
+  <div class="g2">
+    <div class="card" style="border-top:2px solid var(--ac)">
+      <div class="ct">📄 Shostack, G.L. (1984) — HBR</div>
+      <div style="margin-bottom:8px"><em>Bankers Trust 銀行高階主管・實務者視角</em></div>
+      <ul class="ul">
+        <li>發明「藍圖」概念（borrowed from 工程製圖）</li>
+        <li>確立「可視線」這個延續至今的結構</li>
+        <li>四步驟：辨識流程→隔離失效點→建立時間框架→分析獲利性</li>
+        <li>把服務交付轉變為可被記錄、衡量、控制的對象</li>
+        <li>以銀行折扣券商服務、街角擦鞋攤為例示</li>
+      </ul>
+      <div class="note">⭐ 建議直接讀 HBR 版：約 8 頁、有圖、無統計</div>
+    </div>
+    <div class="card" style="border-top:2px solid #a5b4fc">
+      <div class="ct">📄 Bitner, Ostrom &amp; Morgan (2008)</div>
+      <div style="margin-bottom:8px"><em>California Management Review・1,100+ 引用</em></div>
+      <ul class="ul">
+        <li>制度化<strong>五元素＋三線</strong>的標準格式</li>
+        <li>藍圖的獨特之處：毫不妥協地以顧客為中心</li>
+        <li>建議依專案階段調整藍圖細緻度（早期低、後期高）</li>
+        <li>預見「前台科技行動」列——AI 行動者爭論的最早雛形</li>
+        <li>五個跨產業個案佐證（質性個案，非統計實驗）</li>
+      </ul>
+      <div class="note">⭐ 若你只讀一篇，讀這篇</div>
+    </div>
+  </div>
+  <div class="kbox">
+    🔑 核心問題：如何界定以人為中心的 SBP？避免變成以營運流程為主導的藍圖——違背 Bitner et al. 的根本精神。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 08 Magyari 流程 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-a">學術研究</span><span class="tag t-ok">目前最相關 AI×SBP 文獻</span></div>
+  <div class="h1">Magyari &amp; Secomandi (2023) — 研究設計</div>
+  <div class="sub">TU Delft・International Journal of Design・CC BY 4.0・荷蘭骨科門診 AI digital scribe</div>
+  <div class="flow" style="margin-bottom:16px">
+    <div class="fs">
+      <div class="fn">01</div>
+      <div class="ft">使用者研究</div>
+      <div class="fd">6 位骨科醫師＋2 位其他科醫師訪談（30–45 分）；2 位醫師全班次工作觀察；ATLAS.ti 主題編碼</div>
+    </div>
+    <div class="fa">→</div>
+    <div class="fs">
+      <div class="fn">02</div>
+      <div class="ft">統整</div>
+      <div class="fd">兩種人物誌（多工型 / 平衡型）；顧客旅程地圖；MoSCoW 需求排序</div>
+    </div>
+    <div class="fa">→</div>
+    <div class="fs">
+      <div class="fn">03</div>
+      <div class="ft">概念設計</div>
+      <div class="fd">「黑盒子」軟體架構圖 → UX 設計師轉譯為完整服務藍圖；混合主導（mixed-initiative）模型；AI 預填欄位、醫師保有否決權</div>
+    </div>
+    <div class="fa">→</div>
+    <div class="fs">
+      <div class="fn">04</div>
+      <div class="ft">使用者測試</div>
+      <div class="fd">4 位骨科醫師測試互動式雛型；事後訪談 2 位 ML 工程師了解藍圖對協作的實際幫助</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">🎯 核心論點</div>
+      <div class="cb">藍圖的價值不在產出圖，而在<strong>它是 UX 設計師與 ML 工程師之間的翻譯介面</strong>。把 AI 放在「服務基礎設施」這一層，等於把 AI 框定為組織資源之一，而非產品本身。</div>
+    </div>
+    <div class="card">
+      <div class="ct">📊 評估方式</div>
+      <div class="cb">質化為主，無統計檢定。唯一量化工具是 12 題 TAM 量表（n=4），<strong>作者明確標註「不具統計顯著性」</strong>，僅供參考。這是探索性案例研究，而非對照實驗。</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 09 Magyari 效益 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-a">學術研究</span></div>
+  <div class="h1">Magyari &amp; Secomandi：三項質化協作效益</div>
+  <div class="sub">可直接引用的主要貢獻</div>
+  <div class="g3" style="margin-bottom:16px">
+    <div class="card" style="border-top:2px solid #34d399">
+      <div class="ct" style="color:#34d399">① 共同理解設計挑戰</div>
+      <div class="cb">藍圖讓 UX 設計師得以向 ML 工程師「解讀使用者」，雙方能把使用者行動對應到 AI 流程的輸入輸出。技術主管原本提供的軟體架構圖把使用者畫成「黑盒子」，只有 inputs 和 outputs。</div>
+    </div>
+    <div class="card" style="border-top:2px solid #34d399">
+      <div class="ct" style="color:#34d399">② 用使用者洞察豐富 AI 創新</div>
+      <div class="cb">使用者研究發現醫師希望 AI 建議能「隨時間學習進步」，這個需求透過藍圖被明確追溯到對應的 NLP 流程調整（新創公司決定延後開發，但需求已被可視化）。</div>
+    </div>
+    <div class="card" style="border-top:2px solid #34d399">
+      <div class="ct" style="color:#34d399">③ 把 AI 視為組織的共創資源</div>
+      <div class="cb">把 ASR/NLP 框定成後台基礎設施，促使團隊進一步思考其他利害關係人與資源需求（例如硬體故障情境下是否需要客服支援管道）。</div>
+    </div>
+  </div>
+  <div class="card" style="border-left:3px solid #f87171">
+    <div class="ct" style="color:#fca5a5">⚠ 作者自陳限制</div>
+    <div class="cb">探索性研究、單一情境（荷蘭醫療體系中一家新創與一位研究生的合作）——<strong>推論須謹慎</strong>；呼籲後續研究做更嚴謹的開發、實施與評估。AI 仍屬輔助型（文件生成），不涉及自主決策。</div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 10 Mortati 2×2 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-a">學術研究</span><span class="tag t-w">純理論綜合，無實證</span></div>
+  <div class="h1">Mortati &amp; Freitas (2026)：2×2 混合服務接觸框架</div>
+  <div class="sub">Journal of Service Research (SAGE)・Politecnico di Milano・以「提供者是人／AI」×「使用者是人／AI」交叉</div>
+  <div class="mat" style="margin-bottom:14px">
+    <div></div>
+    <div class="mh">使用者：人類</div>
+    <div class="mh">使用者：AI</div>
+    <div class="ml" style="transform:rotate(180deg)">提供者：人類</div>
+    <div class="mc" style="background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.3)">
+      <div class="mc-t" style="color:#a5b4fc">Human-to-Human</div>
+      <div class="mc-d">AI 隱身後台輔助人類決策（ex. 資料分析輔助醫師問診）。爭議：AI 該不該對顧客揭露？</div>
+    </div>
+    <div class="mc" style="background:rgba(6,182,212,.08);border-color:rgba(6,182,212,.25)">
+      <div class="mc-t" style="color:#67e8f9">Human-to-AI</div>
+      <div class="mc-d">AI 代替人類行動（ex. Google Duplex 代打電話訂位）。後台需把決策邏輯轉譯給 AI。</div>
+    </div>
+    <div class="ml" style="transform:rotate(180deg)">提供者：AI</div>
+    <div class="mc" style="background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.25)">
+      <div class="mc-t" style="color:#c4b5fd">AI-to-Human</div>
+      <div class="mc-d">AI 是提供者、人是使用者（ex. Amazon、Netflix 推薦系統）。目前研究最成熟的象限。</div>
+    </div>
+    <div class="mc" style="background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)">
+      <div class="mc-t" style="color:#6ee7b7">AI-to-AI（interAI）</div>
+      <div class="mc-d">演算法之間互動、無人類介入（ex. 紅綠燈號控制系統）。可課責性是懸而未解的缺口。</div>
+    </div>
+  </div>
+  <div class="note">
+    ⚠ 框架仍偏概念層次；四種互動類型如何具體轉譯成圖面上的視覺符號，作者承認仍是開放問題。<strong>不建議作為已驗證結論引用</strong>；框架本身可作為分析工具引用。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 11 學術比較表 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-a">學術研究</span></div>
+  <div class="h1">兩篇 AI × SBP 學術文章比較</div>
+  <div class="sub">性質差異極大——引用時請務必區分</div>
+  <table class="tbl">
+    <thead>
+      <tr><th>比較項目</th><th>Magyari &amp; Secomandi (2023)</th><th>Mortati &amp; Freitas (2026)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>研究性質</strong></td><td><span class="tag t-ok">探索性個案研究（真實產業）</span></td><td><span class="tag t-w">理論綜合（文獻回顧＋框架建構）</span></td></tr>
+      <tr><td><strong>一手資料</strong></td><td>有（訪談、工作觀察、雛型測試、ML工程師訪談）</td><td>無</td></tr>
+      <tr><td><strong>樣本規模</strong></td><td>8 位醫師訪談、4 位雛型測試者、2 位 ML 工程師</td><td>不適用（非實證研究）</td></tr>
+      <tr><td><strong>統計檢定</strong></td><td>無（TAM n=4，作者自陳不具顯著性）</td><td>無</td></tr>
+      <tr><td><strong>可直接引用的內容</strong></td><td>三項質化協作效益（共同理解／資料豐富化／AI視為組織資源）</td><td>框架本身可作為分析工具引用；不建議當已驗證結論</td></tr>
+      <tr><td><strong>作者自陳限制</strong></td><td>「單一案例、荷蘭醫療脈絡，推論須謹慎」</td><td>「未來研究應對此框架進行實證檢驗」</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ══ SLIDE 12 SEC 商業 ══ -->
+<div class="slide sec-slide" style="background:radial-gradient(ellipse at 50% 40%,rgba(6,182,212,.1) 0%,transparent 65%)">
+  <div class="sec-num">02</div>
+  <div class="sec-bar" style="background:var(--cm)"></div>
+  <div class="sec-label" style="color:var(--cm)">Part 02</div>
+  <div class="sec-title">商業產品</div>
+  <div class="sec-desc">產品部落格與官方說明文件，無公開量化實證資料</div>
+  <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <span class="tag t-c">UXPressia</span><span class="tag t-c">Miro</span>
+    <span class="tag t-c">Creately</span><span class="tag t-c">thehuman2ai.com</span>
+  </div>
+  <div style="margin-top:16px;font-size:12px;color:#f87171;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);padding:10px 18px;border-radius:7px;max-width:480px">
+    ⚠ AI 生成的是假設，不是發現。引用時請標註「業界作法」而非「已驗證研究結論」。
+  </div>
+</div>
+
+<!-- ══ SLIDE 13 UXPressia & Miro ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-c">商業產品</span></div>
+  <div class="h1">UXPressia &amp; Miro</div>
+  <div class="sub">最成熟的兩個 AI Service Blueprint 商業工具</div>
+  <div class="g2">
+    <div class="card" style="border-top:2px solid var(--cm)">
+      <div class="ct" style="color:#67e8f9">UXPressia <span class="tag t-ok" style="font-size:9px">唯一明確分析既有藍圖</span></div>
+      <ul class="ul">
+        <li>流程：輸入顧客旅程、前後台流程 → AI 洞察挖掘找落差與依賴關係 → 產出優先排序行動方案＋任務追蹤</li>
+        <li>底層技術透明：OpenAI／Anthropic／Google API＋Pinecone RAG（官方公開）</li>
+        <li>提供逐格 AI 編輯（翻譯、擴寫、簡化）與整張地圖 AI 助理</li>
+        <li>可選輸入真實質化資料（訪談、顧客回饋）或用簡短描述生成</li>
+      </ul>
+      <div class="note">⚠ 無公開實證研究；AI 產出品質仍需人工驗證（官方文件明文提醒）</div>
+    </div>
+    <div class="card" style="border-top:2px solid #0ea5e9">
+      <div class="ct" style="color:#38bdf8">Miro（AI Service Blueprint / Flows）</div>
+      <ul class="ul">
+        <li>流程：把顧客研究資料、CRM 資料、系統日誌餵給 AI → 產出初版藍圖 → 團隊在協作畫布上修正</li>
+        <li>輸出：Insight-to-journey Synthesis / Current &amp; Future State SBP / Pain Points &amp; Opportunities / Action Plan</li>
+        <li>Sidekicks 執行 HITL（Human-in-the-Loop）</li>
+        <li>展望「AI agent 能自主優化服務流程」——明確歸類為「即將到來」，目前尚未成熟</li>
+      </ul>
+      <div class="note">⚠ 行銷語言遠超實證；多人編輯後藍圖常失去三線結構</div>
+    </div>
+  </div>
+  <div class="kbox" style="background:rgba(6,182,212,.06);border-color:rgba(6,182,212,.22);color:#67e8f9">
+    💡 Miro 真正有價值的洞察：傳統藍圖是靜態的，AI 藍圖應隨新的顧客資料、績效指標與營運變動<strong>持續演進</strong>——否則只是又一份沒人看的文件。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 14 thehuman2ai ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-c">方法論指南</span><span class="tag t-ok">AI能力邊界最清楚</span></div>
+  <div class="h1">thehuman2ai.com — 十步驟完整操作指南</div>
+  <div class="sub">方法論最完整的商業／實務來源；明確自評「AI 相容性：部分（partial）」</div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">十步驟流程</div>
+      <div class="cb" style="line-height:1.9">
+        ① 界定範圍與情境<br>
+        ② 組成跨部門團隊並取得高層支持<br>
+        ③ 蒐集顧客與員工兩端研究資料（各 5–10 人）<br>
+        ④ 由左到右畫出顧客行動列<br>
+        ⑤ 加入前台員工行動（以互動線分隔）<br>
+        ⑥ 加入後台員工行動（以能見線分隔）<br>
+        ⑦ 畫出支援流程與系統（以內部互動線分隔）<br>
+        ⑧ 加入實體證據、失敗點（F）、等待點（W）<br>
+        ⑨ 找 2–3 位第一線員工驗證藍圖是否符合實際運作<br>
+        ⑩ 排定優先順序並訂出行動計畫
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px;border-top:2px solid #34d399">
+        <div class="ct" style="color:#34d399">AI 能做</div>
+        <ul class="ul">
+          <li>彙整員工訪談逐字稿成結構化清單</li>
+          <li>比對顧客旅程與員工流程資料找對應關係</li>
+          <li>解析既有 SOP 文件產出初版流程</li>
+          <li>從客服工單偵測反覆出現的失敗模式</li>
+          <li>產出藍圖各欄位的初版文字內容</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:2px solid #f87171">
+        <div class="ct" style="color:#f87171">AI 做不到</div>
+        <ul class="ul">
+          <li>揭露「實際流程」而非「文件寫的流程」</li>
+          <li>跨部門的責任歸屬協商</li>
+          <li>決定「能見線該畫在哪裡」這種策略判斷</li>
+          <li>排序改善優先順序的策略對話</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 15 商業比較表 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-c">商業產品</span></div>
+  <div class="h1">商業工具比較</div>
+  <div class="sub">共同限制：皆無公開量化實證資料</div>
+  <table class="tbl">
+    <thead>
+      <tr><th>工具</th><th>資料輸入來源</th><th>核心優勢（自我陳述）</th><th>主要限制</th><th>人力涉入</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>UXPressia</strong></td><td>真實質化資料（可選）或簡短描述</td><td>能分析既有藍圖找落差；技術棧透明（公開揭露 LLM/RAG 廠商）</td><td>無公開實證；AI 產出需人工驗證</td><td>中</td></tr>
+      <tr><td><strong>Miro</strong></td><td>既有流程文件、CRM 資料、系統日誌</td><td>能整合多種企業既有資料源；協作場景最成熟</td><td>純行銷內容，無具體客戶案例數據佐證</td><td>中</td></tr>
+      <tr><td><strong>Creately</strong></td><td>未說明（僅提供可編輯範本頁）</td><td>提供可直接編輯的範本，上手快</td><td>資訊揭露最少；無法評估 AI 功能實際運作方式</td><td>未說明</td></tr>
+      <tr><td><strong>thehuman2ai.com</strong></td><td>顧客訪談（5–10人）＋員工訪談（5–10人）＋既有 SOP</td><td>唯一提供十步驟完整流程與明確 AI 能力邊界的來源</td><td>屬第三方方法論網站，仍待其他來源交叉驗證</td><td>高</td></tr>
+    </tbody>
+  </table>
+  <div class="kbox red" style="margin-top:14px">
+    每一種畫布工具回答的都是「我們要怎麼畫」，只有證據型工具能回答「這是真的嗎」——一張不真實的地圖再漂亮也比沒有地圖更糟。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 16 SEC 實務 ══ -->
+<div class="slide sec-slide" style="background:radial-gradient(ellipse at 50% 40%,rgba(167,139,250,.1) 0%,transparent 65%)">
+  <div class="sec-num">03</div>
+  <div class="sec-bar" style="background:var(--pr)"></div>
+  <div class="sec-label" style="color:var(--pr)">Part 03</div>
+  <div class="sec-title">實務經驗</div>
+  <div class="sec-desc">可信度因機構而異；NN/g 的方法論基礎最嚴謹</div>
+  <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <span class="tag t-p">Nielsen Norman Group</span>
+    <span class="tag t-p">Jodi Forlizzi (CMU)</span>
+    <span class="tag t-p">Sophia Exintaris</span>
+    <span class="tag t-p">SI Labs</span>
+  </div>
+</div>
+
+<!-- ══ SLIDE 17 實務 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-p">實務經驗</span></div>
+  <div class="h1">實務觀點：NN/g 與顧問觀察</div>
+  <div class="g2">
+    <div class="card" style="border-top:2px solid var(--pr)">
+      <div class="ct" style="color:#c4b5fd">Nielsen Norman Group（最具可信度）</div>
+      <div class="cb">
+        <div style="margin-bottom:8px">🔑 <strong>五步驟：</strong>找到支持→定義目標→蒐集研究→繪製藍圖（先低精細度）→精煉與散布</div>
+        <div style="margin-bottom:8px">📏 <strong>三個 Scope：</strong>Small（≤2 接觸點）/ Medium（2–5）/ Large（5+）——<strong>中小範圍對多數情境最適合</strong></div>
+        <div style="margin-bottom:8px">⏰ <strong>精細度必須對應設計階段</strong>——越早期精細度越低；早期重點是對齊認知，後期是溝通願景</div>
+        <div>📋 <strong>藍圖是敘事，不是清單</strong>——工作坊結束時一定會留下知識缺口，不會產出完整精緻的藍圖</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="ct">Sophia Exintaris（實務顧問，2025）</div>
+        <div class="cb">藍圖是<strong>尋找 AI 導入點的探勘工具</strong>，而非 AI 的產物。把一組營運加速器（含 agentic AI、自助化、啟發式改善等）與每個步驟的每個角色做矩陣交叉，逐格思考該方法能帶來什麼——<em>目前把藍圖與 AI 導入決策接起來最務實的一篇</em>。</div>
+      </div>
+      <div class="card">
+        <div class="ct">Forlizzi（CMU HCI，Medium 2025）</div>
+        <div class="cb">把服務分為三代：Narrow AI → 生成式 AI → Agentic AI。她把「藍圖在 agentic AI 情境下要怎麼運作」提為<strong>開放問題而非結論</strong>。坊間引申出「AI agent 需要第三種泳道」是二次來源的引申，<em>不是她的原話</em>，引用時請注意。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 18 SEC 比較 ══ -->
+<div class="slide sec-slide" style="background:radial-gradient(ellipse at 50% 40%,rgba(251,191,36,.08) 0%,transparent 65%)">
+  <div class="sec-num">04</div>
+  <div class="sec-bar" style="background:var(--cp)"></div>
+  <div class="sec-label" style="color:var(--cp)">Part 04</div>
+  <div class="sec-title">跨類別比較</div>
+  <div class="sec-desc">資料真實性・實證落差・Generative AI vs Agentic AI</div>
+</div>
+
+<!-- ══ SLIDE 19 資料真實性光譜 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-y">跨類別比較</span></div>
+  <div class="h1">資料真實性光譜</div>
+  <div class="sub">資料來源越接近真實使用者，可信度通常越高</div>
+  <div class="spec-bar"></div>
+  <div class="spec-lbl">
+    <span>✅ 完整真實一手資料</span>
+    <span>⚠ 整合既有企業資料</span>
+    <span style="text-align:right">❌ 行銷宣稱／概念推論</span>
+  </div>
+  <div class="g3">
+    <div class="card" style="border-top:2px solid #34d399">
+      <div class="ct" style="color:#34d399">真實一手資料</div>
+      <div class="cb">
+        <div style="margin-bottom:6px">• <strong>Magyari &amp; Secomandi</strong><br>真實訪談＋工作觀察</div>
+        <div style="margin-bottom:6px">• <strong>thehuman2ai.com</strong><br>明確要求訪談各 5–10 人</div>
+        <div>• <strong>UXPressia</strong><br>可上傳真實質化資料</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--cp)">
+      <div class="ct" style="color:#fde68a">整合既有企業資料</div>
+      <div class="cb">
+        <div style="margin-bottom:6px">• <strong>Miro</strong><br>CRM 資料、系統日誌整合</div>
+        <div>• <strong>NN/g</strong><br>對實務者的調查研究（可信度高）</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:2px solid #f87171">
+      <div class="ct" style="color:#f87171">行銷宣稱／概念推論</div>
+      <div class="cb">
+        <div style="margin-bottom:6px">• <strong>Creately</strong><br>純行銷範本頁，無說明</div>
+        <div>• <strong>Mortati &amp; Freitas</strong><br>示範案例，非第一手資料蒐集</div>
+      </div>
+    </div>
+  </div>
+  <div class="kbox red" style="margin-top:14px">
+    共同風險：「合成」內容終究是 AI 依統計規律編造出來的資料，而非真實使用者或員工實際說的話。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 20 三大落差 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-y">跨類別比較</span></div>
+  <div class="h1">三大核心落差</div>
+  <div class="sub">學術／NN/g 立場 vs 商業工具立場</div>
+  <div class="tension">
+    <div class="tc">
+      <div>
+        <div class="tc-side-l">學術 / NN/g</div>
+        <div class="tc-txt">藍圖「毫不妥協地以顧客為中心」，從顧客行動推導後台</div>
+      </div>
+      <div class="tc-vs">↔</div>
+      <div>
+        <div class="tc-side-r">商業工具</div>
+        <div class="tc-txt">AI 生成邏輯從流程描述<strong>反推</strong>顧客行動——方向相反，容易產出「<strong>營運流程圖穿上藍圖的衣服</strong>」</div>
+      </div>
+    </div>
+    <div class="tc">
+      <div>
+        <div class="tc-side-l">學術 / NN/g</div>
+        <div class="tc-txt">共創過程本身就是產出，促成跨職能溝通與共識</div>
+      </div>
+      <div class="tc-vs">↔</div>
+      <div>
+        <div class="tc-side-r">商業工具</div>
+        <div class="tc-txt">AI 工具的價值主張是「<strong>省下這個過程</strong>」——直接衝突，不是互補</div>
+      </div>
+    </div>
+    <div class="tc">
+      <div>
+        <div class="tc-side-l">學術 / NN/g</div>
+        <div class="tc-txt">低精細度起步、逐步提高</div>
+      </div>
+      <div class="tc-vs">↔</div>
+      <div>
+        <div class="tc-side-r">商業工具</div>
+        <div class="tc-txt">預設輸出高精細度成品，讓團隊在<strong>證據不足時就對漂亮的圖產生錯誤共識</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 21 GenAI vs Agentic ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-y">跨類別比較</span></div>
+  <div class="h1">Generative AI vs Agentic AI</div>
+  <div class="sub">套用 Mortati &amp; Freitas (2026) 的分類架構</div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card" style="border-top:2px solid var(--ac)">
+      <div class="ct" style="color:#a5b4fc">Generative AI <span class="tag t-a" style="font-size:9px">目前全部 SBP 工具</span></div>
+      <ul class="ul">
+        <li>被動回應使用者輸入或上傳資料</li>
+        <li>每一步驟都需要人工觸發與確認</li>
+        <li>Magyari &amp; Secomandi 案例的 ASR/NLP 系統</li>
+        <li>UXPressia、Miro、Creately 皆屬此類</li>
+      </ul>
+      <div class="note">目前所有可查到的 SBP 相關工具都在這個類別</div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--cp)">
+      <div class="ct" style="color:#fde68a">Agentic AI <span class="tag t-w" style="font-size:9px">SBP 領域尚無成熟實證案例</span></div>
+      <ul class="ul">
+        <li>能自主規劃多步驟策略</li>
+        <li>在較少人力監督下執行</li>
+        <li>Miro 提及「AI agent 能自主優化服務流程」——但明確歸類為「即將到來」</li>
+        <li>thehuman2ai.com：AI 在策略性任務上仍完全仰賴人力</li>
+      </ul>
+      <div class="note">⚠ 目前尚未出現符合「agentic」定義且有實證資料佐證的 SBP 工具</div>
+    </div>
+  </div>
+  <div class="kbox green">
+    🔑 結論一致（跨學術與商業來源）：Agentic AI 在 SBP 領域仍是未來展望，不是當前現實。
+  </div>
+</div>
+</div>
+
+<!-- ══ SLIDE 22 SEC 結論 ══ -->
+<div class="slide sec-slide" style="background:radial-gradient(ellipse at 50% 40%,rgba(52,211,153,.08) 0%,transparent 65%)">
+  <div class="sec-num">05</div>
+  <div class="sec-bar" style="background:var(--cn)"></div>
+  <div class="sec-label" style="color:var(--cn)">Part 05</div>
+  <div class="sec-title">結論與引用建議</div>
+  <div class="sec-desc">AI 適合處理哪些環節・不適合哪些・各來源如何引用</div>
+</div>
+
+<!-- ══ SLIDE 23 引用建議 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-ok">結論</span></div>
+  <div class="h1">引用建議</div>
+  <div class="sub">六個來源的方法論嚴謹度差異極大——正式研究報告中請務必區分</div>
+  <table class="tbl">
+    <thead>
+      <tr><th>來源</th><th>建議引用方式</th><th>適合的引用情境</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Bitner et al. (2008)</strong></td><td><span class="tag t-ok">已驗證的標準格式（1,100+ 引用）</span></td><td>界定藍圖的五元素三線結構</td></tr>
+      <tr><td><strong>Magyari &amp; Secomandi (2023)</strong></td><td><span class="tag t-ok">同儕審查個案研究（質化實證）</span></td><td>論證「藍圖作為 UX 與 ML 溝通邊界物件」；混合主導設計</td></tr>
+      <tr><td><strong>Mortati &amp; Freitas (2026)</strong></td><td><span class="tag t-y">概念框架（非實證）</span></td><td>分析人機混合四種互動類型；設計師角色轉型的概念討論</td></tr>
+      <tr><td><strong>NN/g 系列文章</strong></td><td><span class="tag t-ok">實務調查研究</span></td><td>說明製作流程與工作坊設計；範圍選擇建議</td></tr>
+      <tr><td><strong>thehuman2ai.com</strong></td><td><span class="tag t-y">第三方方法論指南</span></td><td>說明 AI 能做／不能做的具體邊界；十步驟操作流程</td></tr>
+      <tr><td><strong>Miro / UXPressia / Creately</strong></td><td><span class="tag t-w">業界作法／產品觀察</span></td><td>說明市場上現有解決方案的取向（不可當實證引用）</td></tr>
+      <tr><td><strong>Forlizzi / Exintaris / SI Labs</strong></td><td><span class="tag t-w">立場性隨筆／顧問觀察</span></td><td>輔助說明實務作法與未來方向；注意「開放問題」vs「已驗證結論」</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ══ SLIDE 24 務實結論 ══ -->
+<div class="slide">
+<div class="inner">
+  <div style="margin-bottom:4px"><span class="tag t-ok">結論</span></div>
+  <div class="h1">務實結論</div>
+  <div class="sub">AI 在 SBP 流程中的角色定位</div>
+  <div class="cg" style="margin-bottom:16px">
+    <div class="cc g">
+      <div style="font-size:13px;font-weight:700;color:#34d399;margin-bottom:12px">✅ AI 適合處理</div>
+      <div class="ci g">轉錄整理——把訪談逐字稿整理成候選步驟</div>
+      <div class="ci g">草稿生成——產出初版泳道文字與藍圖結構</div>
+      <div class="ci g">模式偵測——從客服工單自動抓出失敗模式</div>
+      <div class="ci g">工作坊前準備——從傳統 1–2 週壓縮到 2–3 天</div>
+      <div class="ci g">異常預警——在問題影響顧客前先介入</div>
+    </div>
+    <div class="cc r">
+      <div style="font-size:13px;font-weight:700;color:#f87171;margin-bottom:12px">❌ AI 不適合決定</div>
+      <div class="ci r">可視線位置——策略判斷，決定哪些流程對顧客可見</div>
+      <div class="ci r">失效點判定——需要真實組織知識與問題追蹤</div>
+      <div class="ci r">範圍取捨——NN/g 強調範圍是新手最大的失敗點</div>
+      <div class="ci r">跨部門責任歸屬——需要組織政治判斷與人際溝通</div>
+    </div>
+  </div>
+  <div class="kbox green" style="font-size:13px;font-weight:500">
+    以上三者（可視線位置、失效點判定、範圍取捨）正是所有文獻公認<strong>決定藍圖好壞</strong>的地方。AI 適合加速前後製，工作坊本身的核心價值仍在於讓真人講出跟文件不一致的真相。
+  </div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<button class="nav" id="prevBtn" onclick="go(-1)" disabled>←</button>
+<div id="ctr">1 / 24</div>
+<button class="nav" id="nextBtn" onclick="go(1)">→</button>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let cur=0,busy=false;
+
+function go(d){
+  if(busy)return;
+  const nxt=cur+d;
+  if(nxt<0||nxt>=total)return;
+  busy=true;
+
+  const DUR=340,ease='cubic-bezier(0.4,0,0.2,1)';
+  const tr=`transform ${DUR}ms ${ease},opacity ${DUR}ms ${ease}`;
+  const from=slides[cur],to=slides[nxt];
+
+  // 1. 將進入的投影片瞬間定位在螢幕外（無動畫）
+  to.style.transition='none';
+  to.style.transform=d>0?'translateX(100%)':'translateX(-100%)';
+  to.style.opacity='1';
+  to.classList.add('active');
+
+  // 2. 強制瀏覽器確認初始位置（觸發 reflow）
+  void to.offsetWidth;
+
+  // 3. 同時動畫兩張投影片
+  from.style.transition=tr;
+  from.style.transform=d>0?'translateX(-6%)':'translateX(6%)';
+  from.style.opacity='0';
+  to.style.transition=tr;
+  to.style.transform='translateX(0)';
+  to.style.opacity='1';
+
+  // 4. 動畫結束後清除所有 inline style，避免殘留
+  setTimeout(()=>{
+    from.classList.remove('active');
+    from.style.cssText='';
+    to.style.cssText='';
+    cur=nxt;busy=false;upd();
+  },DUR+40);
+}
+
+function upd(){
+  document.getElementById('ctr').textContent=(cur+1)+' / '+total;
+  document.getElementById('prog').style.width=((cur+1)/total*100)+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===total-1;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+});
+
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+document.addEventListener('touchend',e=>{
+  const dx=tx-e.changedTouches[0].clientX;
+  if(Math.abs(dx)>50)go(dx>0?1:-1);
+});
+
+upd();
+</script>
+</body>
+</html>
