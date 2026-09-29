@@ -3,3 +3,7 @@
 
 # 課程教材（他人著作），只留在本機
 QDS Critical Form_Sample.doc
+
+# 私有資料夾：任何層級的 keepPrivate 都不可進 git
+keepPrivate/
+**/keepPrivate/
