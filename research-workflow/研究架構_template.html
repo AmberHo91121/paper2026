@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研究架構樣板 Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', sans-serif; }
+  body.keyword-highlight .key-term {
+    color: #c05621;
+    background-color: #feebc8;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body class="bg-slate-100">
+
+  <div class="max-w-5xl mx-auto my-6 px-4">
+    <div class="bg-amber-50 border border-amber-300 text-amber-800 text-sm rounded-lg px-4 py-2 mb-4">
+      <i class="fa-solid fa-flask mr-1"></i>
+      這是視覺樣板 Demo，內容為示範用虛構研究規劃，不是真實研究架構。
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 mb-10">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-6 md:p-8 border-b border-slate-800">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3 text-slate-400 text-sm mb-2">
+            <span class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 font-semibold">研究架構</span>
+            <span><i class="fa-solid fa-diagram-project mr-1"></i> Research Framework</span>
+          </div>
+          <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide leading-snug">
+            意圖標註機制：協助生成式 AI 辨識刻意模糊輸入的介面設計（示範用虛構研究）
+          </h1>
+        </div>
+        <button id="highlightToggleBtn" onclick="toggleHighlight()"
+          class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+          <i class="fa-solid fa-highlighter"></i>
+          高亮關鍵字
+        </button>
+      </div>
+    </header>
+
+    <main class="p-6 md:p-8 space-y-6">
+
+      <!-- 0. 對應的研究缺口 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-slate-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass-chart text-slate-500"></i>
+          對應的研究缺口（來自 Agent 1 Stage C）
+        </h2>
+        <p class="text-slate-700 leading-relaxed">生成式 AI 協作工具目前缺乏辨識使用者<span class="key-term">刻意模糊輸入</span>的機制，多數研究聚焦「AI 腦補能力夠不夠」，未處理「AI 能不能辨識模糊是不是刻意的」這個更前置的問題。</p>
+      </section>
+
+      <!-- 1. Problem / Aim / Objectives -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-violet-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-violet-200 flex items-center gap-2">
+          <span class="bg-violet-600 text-white text-xs px-2.5 py-1 rounded-full">1</span>
+          Problem / Aim / Objectives（Stage B 已確認）
+        </h2>
+        <div class="space-y-4">
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Problem</h3>
+            <p class="text-slate-700 leading-relaxed">生成式 AI 協作工具無法區分使用者刻意保留的模糊輸入與單純的不精確輸入，這樣的<span class="key-term">意圖辨識落差</span>可以透過什麼樣的介面機制被彌補？</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Aim</h3>
+            <p class="text-slate-700 leading-relaxed">設計並驗證一套能讓使用者標註輸入意圖（發想模式／規格模式）的生成式 AI 介面機制。</p>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 mb-1">Objectives</h3>
+            <ul class="list-disc list-outside pl-5 space-y-1 text-slate-700 leading-relaxed">
+              <li>描述設計師在生成式 AI 協作中表達刻意模糊的既有策略</li>
+              <li>設計並原型化「發想模式／規格模式」切換機制</li>
+              <li>評估此機制對創意產出品質與使用者控制感的影響</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 框架構念 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-emerald-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-emerald-200 flex items-center gap-2">
+          <span class="bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full">2</span>
+          研究框架構念（Stage C）
+        </h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-lightbulb text-emerald-500 mr-1"></i>理論構念</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2"><span class="key-term">Human-AI Co-Creation</span>、<span class="key-term">Perceived Control</span>、<span class="key-term">Creative Serendipity</span></p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">三者對應到「模糊性辨識落差」缺口裡的協作、控制感、創意品質三個面向，缺一不可</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">未納入長期使用下的信任感變化，只看單次任務表現</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">後續問卷/訪談題項需要能分別測到這三個構念，不能只問整體滿意度</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-flask-vial text-emerald-500 mr-1"></i>方法選擇</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">Research through Design（原型設計＋使用者評估），質化為主、量化為輔的混合方法</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">「意圖標註機制」還不存在，需要先做出可操作的原型才能讓使用者實際評估，純訪談問不出感受</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">原型的實作完整度會限制使用者體驗的真實性，findings 只能算初步驗證，不是成熟產品的結論</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">Agent 4 規劃招募時要考慮參與者需要一定時間學習操作原型，不能只安排一次性短訪談</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-database text-emerald-500 mr-1"></i>資料蒐集規劃（概要）</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">8-10 位設計師的原型使用工作坊＋半結構訪談＋創意產出品質評分（細節留給 Agent 4 研究設計）</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">樣本數對應質化個案研究的飽和慣例，工作坊形式能同時觀察操作行為與收集口語反饋</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">8-10 人不足以做統計推論，結論屬於描述性/類比性，不能宣稱可推論到所有設計師</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">Agent 4 的招募條件要能對應到這個樣本規模合理的招募管道與時程</dd></div>
+            </dl>
+          </div>
+          <div class="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-chart-line text-emerald-500 mr-1"></i>分析方法（概要）</h3>
+            <p class="text-slate-700 text-sm leading-relaxed mb-2">訪談資料主題分析＋產出評分的描述性統計比較</p>
+            <dl class="text-xs text-slate-500 space-y-1 border-t border-slate-100 pt-2">
+              <div><dt class="inline font-semibold text-slate-600">原因：</dt><dd class="inline">質化為主的設計對應主題分析，產出評分則用描述性統計佐證質化發現，不做推論統計</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">限制：</dt><dd class="inline">描述性統計無法檢定顯著差異，只能作為輔助佐證</dd></div>
+              <div><dt class="inline font-semibold text-slate-600">影響：</dt><dd class="inline">報告呈現時要清楚標明統計部分是描述性的，避免讀者誤以為有做假設檢定</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="mt-4 bg-emerald-50 rounded-lg border border-emerald-200 p-4">
+          <h3 class="font-bold text-emerald-800 mb-1"><i class="fa-solid fa-trophy mr-1"></i>預期貢獻</h3>
+          <p class="text-emerald-900 text-sm leading-relaxed">提出可遷移到其他生成式創意工具的「意圖標註」互動設計原則，回應 Agent 1 找到的<span class="key-term">意圖辨識落差</span>缺口。</p>
+        </div>
+      </section>
+
+      <!-- 3. 對照參考 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-indigo-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-indigo-200 flex items-center gap-2">
+          <span class="bg-indigo-600 text-white text-xs px-2.5 py-1 rounded-full">3</span>
+          對照參考（來自 Agent 1／2 已看過的文獻）
+        </h2>
+        <div class="bg-white rounded-lg border border-slate-200 p-4">
+          <h3 class="font-bold text-slate-800 mb-1">Chen (2026) — Intimate Data Performativity</h3>
+          <p class="text-slate-700 text-sm leading-relaxed">該研究用「日記研究＋深度訪談」的混合質化方法，歸納出三維度概念框架（Figure 5）。跟本研究的差異：Chen (2026) 是事後歸納既有實踐的框架，本研究則是先設計介入原型、再驗證框架是否成立，屬於 Research through Design 而非純詮釋性質化研究。</p>
+        </div>
+      </section>
+
+      <!-- 4. 流程圖 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-amber-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-amber-200 flex items-center gap-2">
+          <span class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded-full">4</span>
+          研究框架流程圖
+        </h2>
+        <div class="bg-white rounded-lg border border-slate-200 p-4 overflow-x-auto">
+          <pre class="mermaid">
+graph TD
+    A[研究缺口：AI 無法辨識刻意模糊] --> B[Problem：意圖辨識落差可以怎麼被彌補？]
+    B --> C[Aim：設計並驗證意圖標註介面機制]
+    C --> D1[Objective 1：描述既有表達策略]
+    C --> D2[Objective 2：設計切換機制原型]
+    C --> D3[Objective 3：評估對創作與控制感的影響]
+    D1 --> E[理論構念：Co-Creation／Perceived Control／Serendipity]
+    D2 --> F[方法：Research through Design]
+    D3 --> F
+    E --> G[資料蒐集：工作坊＋訪談＋產出評分]
+    F --> G
+    G --> H[分析：主題分析＋描述性統計]
+    H --> I[預期貢獻：意圖標註互動設計原則]
+          </pre>
+        </div>
+      </section>
+
+      <!-- 5. 版本紀錄 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 border-l-4 border-l-cyan-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-cyan-200 flex items-center gap-2">
+          <span class="bg-cyan-600 text-white text-xs px-2.5 py-1 rounded-full">5</span>
+          版本紀錄
+        </h2>
+        <p class="text-xs text-slate-400 mb-3"><i class="fa-brands fa-github mr-1"></i>repo／public-private 還沒定案前，這裡先用表格示意；一旦接上 GitHub，這張表格會直接被 <code class="bg-slate-100 px-1 rounded">git log</code> 取代，不用手動維護</p>
+        <table class="w-full text-sm text-left text-slate-700">
+          <thead class="text-xs text-slate-500 uppercase border-b border-slate-300">
+            <tr>
+              <th class="py-2 pr-4">版本 / commit</th>
+              <th class="py-2 pr-4">日期</th>
+              <th class="py-2">異動摘要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-slate-200">
+              <td class="py-2 pr-4 font-semibold">v1</td>
+              <td class="py-2 pr-4">2026-09-24</td>
+              <td class="py-2">初版草案，Stage A/B/C 首次產出（示範資料）</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 6. 研究筆記 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-dashed border-slate-300 border-l-4 border-l-rose-400 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-rose-200 flex items-center gap-2">
+          <span class="bg-rose-600 text-white text-xs px-2.5 py-1 rounded-full">6</span>
+          研究筆記
+        </h2>
+        <p class="text-xs text-rose-400 mb-2 uppercase tracking-wide">你自己持續累積的地方，改走 GitHub 後每次編輯直接 commit，歷史紀錄由 git 保證不會遺失</p>
+        <p class="text-slate-500 italic leading-relaxed">（在這裡直接寫下你邊看邊想到的東西，commit 一次就是一個安全的存檔點）</p>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+  function toggleHighlight() {
+    document.body.classList.toggle('keyword-highlight');
+    const btn = document.getElementById('highlightToggleBtn');
+    const active = document.body.classList.contains('keyword-highlight');
+    btn.classList.toggle('bg-amber-100', active);
+    btn.classList.toggle('text-amber-900', active);
+    btn.classList.toggle('border-amber-400', active);
+    btn.classList.toggle('bg-slate-800', !active);
+    btn.classList.toggle('text-slate-200', !active);
+    btn.classList.toggle('border-slate-700', !active);
+  }
+</script>
+</body>
+</html>

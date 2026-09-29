@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "考考男 KaoKaoNan",
+  "version": "0.1.0",
+  "description": "MVP：偵測論文讀到最後一頁 + 累積閱讀時長門檻，主動跳出提問",
+  "author": "amberho91121@gmail.com",
+  "applications": {
+    "zotero": {
+      "id": "kaokaonan@researchworkflow.local",
+      "update_url": "https://researchworkflow.local/kaokaonan/update.json",
+      "strict_min_version": "7.0",
+      "strict_max_version": "10.0.*"
+    }
+  }
+}

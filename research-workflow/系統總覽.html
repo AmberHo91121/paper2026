@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研究工作流程 Agent 系統總覽</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', sans-serif; }
+</style>
+</head>
+<body class="bg-slate-100">
+
+  <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 my-6">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-6 md:p-8 border-b border-slate-800">
+      <div class="flex items-center gap-3 text-slate-400 text-sm mb-2">
+        <span class="bg-slate-800 px-3 py-1 rounded-full border border-slate-700 font-semibold">系統總覽</span>
+        <span><i class="fa-solid fa-diagram-project mr-1"></i> 一頁看完整套設計</span>
+      </div>
+      <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide leading-snug">研究工作流程 AI Agent 系統</h1>
+      <p class="text-slate-400 text-sm mt-2">5 個 agent，每一步都停下來等你確認才繼續；框架站不住腳時有明確的迴圈可以走回去修正。</p>
+    </header>
+
+    <main class="p-6 md:p-8 space-y-8">
+
+      <!-- 流程圖 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-route text-slate-500"></i> 整體流程與迴圈
+        </h2>
+        <div class="bg-white rounded-lg border border-slate-200 p-4 overflow-x-auto">
+          <pre class="mermaid">
+graph TD
+    A1[Agent 1<br/>文獻蒐集] --> A2[Agent 2<br/>精讀陪讀]
+    A2 --> A3[Agent 3<br/>研究架構]
+    A3 --> A4[Agent 4<br/>研究設計]
+    A4 --> EX[訪談/表單執行<br/>人工 + Notion 轉錄]
+    EX --> A5[Agent 5<br/>洞見萃取]
+
+    A5 -. Stage D 觸發：Pattern 對不上框架 .-> A3
+    A4 -. Stage D 觸發：技法蒐不到需要的資料 .-> A3
+    A3 -. 文獻支撐不足，先補查 .-> A1
+
+    classDef done fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    class A1,A2,A3,A4,A5 done;
+          </pre>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">實線＝正常往下走；虛線＝ Stage D 診斷式討論觸發的迴圈，一律由你主動發現、主動叫出來，不是 agent 自動偵測。</p>
+      </section>
+
+      <!-- 五個 Agent 卡片 -->
+      <section>
+        <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-robot text-slate-500"></i> 五個 Agent
+        </h2>
+        <div class="space-y-3">
+
+          <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-blue-400 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-blue-600 text-white text-xs px-2.5 py-1 rounded-full">1</span>
+              <h3 class="font-bold text-slate-800">文獻蒐集 Agent</h3>
+              <span class="text-xs text-slate-400">[文獻蒐集Agent_SPEC.md]</span>
+            </div>
+            <p class="text-sm text-slate-600">Stage A 背景知識 → Stage B 近三年研究 → Stage C 研究缺口。ACM＞Google Scholar＞WoS，以 HCI 大會為主軸，心理學/資訊科學輔助。輸出純 Markdown，不生成 HTML。</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-emerald-400 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-emerald-600 text-white text-xs px-2.5 py-1 rounded-full">2</span>
+              <h3 class="font-bold text-slate-800">精讀陪讀 Agent</h3>
+              <span class="text-xs text-slate-400">[精讀陪讀Agent_SPEC.md]</span>
+            </div>
+            <p class="text-sm text-slate-600">依 Critical Form 13 欄位整理單篇論文，Stage A 抽取 → Stage B 你確認 → Stage C 套版產出 HTML。每篇論文附翻譯摘要＋自由筆記起始檔。</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-violet-400 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-violet-600 text-white text-xs px-2.5 py-1 rounded-full">3</span>
+              <h3 class="font-bold text-slate-800">研究架構 Agent</h3>
+              <span class="text-xs text-slate-400">[研究架構Agent_SPEC.md]</span>
+            </div>
+            <p class="text-sm text-slate-600">Stage A 邏輯與缺口對齊評判 → Stage B 你確認 Problem/Aim/Objectives → Stage C 規劃框架＋流程圖 → <strong>Stage D 框架修正協作（整條鏈唯一的正式迴圈）</strong>，6 種偏誤類型幫你我對話時快速定位問題。</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-amber-400 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded-full">4</span>
+              <h3 class="font-bold text-slate-800">研究設計 Agent</h3>
+              <span class="text-xs text-slate-400">[研究設計Agent_SPEC.md]</span>
+            </div>
+            <p class="text-sm text-slate-600">Stage A 技法提案（半結構訪談/日記法/情境訪查/RtD……）→ Stage B 對話共創執行細節 → Stage C 雙向可回溯性檢查＋依典範套嚴謹判準。強制產出研究倫理與同意書。</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-rose-400 p-4">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="bg-rose-600 text-white text-xs px-2.5 py-1 rounded-full">5</span>
+              <h3 class="font-bold text-slate-800">洞見萃取 Agent</h3>
+              <span class="text-xs text-slate-400">[洞見萃取Agent_SPEC.md]</span>
+            </div>
+            <p class="text-sm text-slate-600">九層框架（Raw Data→…→Implication），Stage A 逐句編碼 → Stage B 跨受訪者聚合 → Stage C 詮釋（Why 最多 2 個候選）。整條鏈的最後一站，不接下游 agent。</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 資料夾結構 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-folder-tree text-slate-500"></i> 一個研究主題資料夾長怎樣
+        </h2>
+        <pre class="text-xs md:text-sm text-slate-700 bg-white rounded-lg border border-slate-200 p-4 overflow-x-auto leading-relaxed">&lt;主題資料夾&gt;/
+  00_編輯歷程.md        人類可讀的里程碑（跟 git log 互補）
+  01_文獻探討/          Agent 1 + Agent 2（含每篇論文的 critical-form/筆記/翻譯摘要）
+  02_研究問題/          Agent 3 Stage A/B
+  03_研究架構/          Agent 3 Stage C
+  04_研究方法/          Agent 4（含研究倫理與同意書）
+  05_原始資料/          訪談逐字稿／日記（Notion 轉錄後匯出）
+  06_結果/              Agent 5（含對應研究框架的整理）
+  07_討論/              已無對應 agent，你自己手動寫</pre>
+        <p class="text-xs text-slate-500 mt-2">整個大 repo 裝多個主題資料夾，<strong>Private</strong>，網頁自己本機開，不接 GitHub Pages。</p>
+      </section>
+
+      <!-- 關鍵原則 -->
+      <section class="bg-slate-50 p-6 rounded-lg border border-slate-200 shadow-sm">
+        <h2 class="text-lg font-bold text-slate-900 mb-3 pb-2 border-b border-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-slate-500"></i> 貫穿全部 agent 的原則
+        </h2>
+        <ul class="text-sm text-slate-700 space-y-1.5 list-disc list-outside pl-5">
+          <li>一律手動觸發，沒有檔案監看/自動化，每個 Stage 之間你明確說可以才繼續</li>
+          <li>詮釋層（Why／Insight／推論／缺口判斷）一定標「推論」，agent 只提案，不能替你下結論</li>
+          <li>每個決策都要附「原因／限制／影響」，不是只寫「選了什麼」</li>
+          <li>雙向可回溯性：訪談題目對得到框架構念，框架構念也要有題目對應，兩邊都不能有漏洞</li>
+          <li>敏感研究一定要有倫理與同意書討論，不是選配</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+</body>
+</html>
