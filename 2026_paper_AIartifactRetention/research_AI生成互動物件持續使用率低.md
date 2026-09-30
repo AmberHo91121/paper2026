@@ -92,13 +92,13 @@
 - **與本主題的連結**:AI 生成的互動物件多數是「一次生成、定格輸出」,若使用者的需求在物件生成後持續演變,而物件本身缺乏隨需求同步演化的機制,便會在需求與物件之間出現落差,使用者選擇棄用而非修改。
 
 ### 4.3 缺乏持續迭代/維護機制(Lack of ongoing maintenance mechanisms)
-- 傳統end-user programming(以試算表巨集為代表性案例)的文獻長期指出:終端使用者建立的工具通常「不含單元測試、驗證測試、錯誤處理」等軟體工程保護機制,一旦原作者離開或忘記邏輯,便進入「不要動它(don't touch it policy)」的停滯狀態,形同事實上的棄用。([學術文獻彙整,見 dl.acm.org、ResearchGate 相關論文](https://dl.acm.org/doi/abs/10.5555/776816.776828))
+- 傳統end-user programming(以試算表巨集為代表性案例)的文獻長期指出:終端使用者建立的工具通常「不含單元測試、驗證測試、錯誤處理」等軟體工程保護機制,一旦原作者離開或忘記邏輯,便進入「不要動它(don't touch it policy)」的停滯狀態,形同事實上的棄用。(Ko et al., 2011, *ACM Computing Surveys*, [DOI](https://doi.org/10.1145/1922649.1922658))
 - End-user computing 的營運風險包括「缺乏版本與變更控制」「缺乏文件」「過度依賴原開發者」「缺乏維護流程」,這些正是 AI 生成互動物件目前普遍欠缺的能力(多數工具生成後即完成任務,沒有內建的長期維護輔助)。
 - **與本主題的連結**:這條文獻脈絡直接支持「AI 生成物件的『事後維護斷層』是造成持續使用率低的結構性原因」——不是使用者不想用,而是缺乏低成本、低門檔的方式讓物件跟著使用者需求一起演化。
 
 ### 4.4 新奇效應(Novelty effect)消退——但證據較複雜,並非全面適用
 - Novelty effect 的經典定義:使用新技術的意願初期偏高,隨著熟悉度提升而遞減,除非任務本身變得對使用者有內在意義。([Wikipedia 綜述](https://en.wikipedia.org/wiki/Novelty_effect);Wells 2010, *Decision Sciences*,[Wiley](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-5915.2010.00292.x))
-- 值得注意的**反例**:2024 一篇縱貫研究《Not Just Novelty: A Longitudinal Study on Utility and Customization of an AI Workflow》(arXiv:2402.09894)追蹤 12 名 CS 博士生連續 3 週、10 次使用 GPT-4 驅動的科普寫作輔助工具,發現:熟悉後感知有用性**反而提升 12.1%**,任務表現提升 14.9%,時間效率提升 7.1%;使用者經過平均 4.27 次的「熟悉期」後進入更深度的客製化使用(尤其是可編輯提示詞,有用性再提升 11.4%)。作者結論:AI 工具的持續價值來自於「暴露可編輯的底層提示詞、支援高認知負荷任務(構思、翻譯、意義建構)」,而非單純的新奇感消退。([arXiv 全文](https://arxiv.org/html/2402.09894v2))
+- 值得注意的**反例**:2024 一篇縱貫研究《Not Just Novelty: A Longitudinal Study on Utility and Customization of an AI Workflow》(Long, Gero, & Chilton, DIS 2024;預印本 arXiv:2402.09894)追蹤 12 名 CS 博士生連續 3 週、10 次使用 GPT-4 驅動的科普寫作輔助工具,發現:熟悉後感知有用性**反而提升 12.1%**,任務表現提升 14.9%,時間效率提升 7.1%;使用者經過平均 4.27 次的「熟悉期」後進入更深度的客製化使用(尤其是可編輯提示詞,有用性再提升 11.4%)。作者結論:AI 工具的持續價值來自於「暴露可編輯的底層提示詞、支援高認知負荷任務(構思、翻譯、意義建構)」,而非單純的新奇感消退。([ACM DL](https://doi.org/10.1145/3643834.3661587);[arXiv 全文](https://arxiv.org/html/2402.09894v2))
 - **與本主題的連結**:此文獻提供了重要的「反證/邊界條件」——並非所有 AI 工具都必然因新奇效應消退而被棄用;關鍵變因是該工具是否支援「可客製化的持續互動」。這對論文而言是一個很有力的對照:AI 生成互動物件之所以留存率低,可能正是因為它們(相對於此研究中的可編輯提示詞工作流)缺乏事後客製化/編輯的介面支援,而非單純「新奇感必然消退」。
 
 ### 4.5 IKEA 效應的反面應用——「生成物件」缺乏勞動投入,難以產生擁有感
@@ -169,7 +169,7 @@
 - "The Effects of Perceived AI Use On Content Perceptions." *Proceedings of CHI 2024*. https://dl.acm.org/doi/10.1145/3613904.3642076
 - "Iterative Critique-Refine Framework for Enhancing LLM Personalization." arXiv:2510.24469. https://arxiv.org/pdf/2510.24469
 - "An HCI-Centric Survey and Taxonomy of Human-Generative-AI Interactions." arXiv:2310.07127. https://arxiv.org/html/2310.07127v2
-- "Not Just Novelty: A Longitudinal Study on Utility and Customization of an AI Workflow." arXiv:2402.09894. https://arxiv.org/html/2402.09894v2 ; PDF: https://arxiv.org/pdf/2402.09894
+- Long, T., Gero, K. I., & Chilton, L. B. (2024). "Not Just Novelty: A Longitudinal Study on Utility and Customization of an AI Workflow." *Proceedings of DIS 2024*. https://doi.org/10.1145/3643834.3661587 ;預印本 arXiv:2402.09894:https://arxiv.org/html/2402.09894v2
 - Wells, J.D. et al. (2010). "The Effect of Perceived Novelty on the Adoption of Information Technology Innovations: A Risk/Reward Perspective." *Decision Sciences*. https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-5915.2010.00292.x
 - Wikipedia. "Novelty effect." https://en.wikipedia.org/wiki/Novelty_effect
 - Norton, M. I., Mochon, D., & Ariely, D. (2012). "The IKEA effect: When labor leads to love." *Journal of Consumer Psychology*. https://myscp.onlinelibrary.wiley.com/doi/abs/10.1016/j.jcps.2011.08.002 ; 全文 PDF (Harvard DASH): https://dash.harvard.edu/bitstreams/7312037d-2473-6bd4-e053-0100007fdf3b/download
@@ -179,7 +179,7 @@
 - "TOO MUCH, TOO FAST: Understanding AI Fatigue In The Digital Acceleration Era." ResearchGate. https://www.researchgate.net/publication/394527631_TOO_MUCH_TOO_FAST_UNDERSTANDING_AI_FATIGUE_IN_THE_DIGITAL_ACCELERATION_ERA
 - "AI fatigue in human–AI interaction: Conceptual framework, scale development and validation, and associations with AI engagement." *ScienceDirect*, 2026. https://sciencedirect.com/science/article/pii/S2451958826002605
 - "Prompt Fatigue in Generative AI: A Cognitive and Information [Processing Perspective]." AISeL/ICIS 2025 TREOS. https://aisel.aisnet.org/cgi/viewcontent.cgi?article=1091&context=treos_icis2025
-- End-user software engineering / spreadsheet 相關文獻彙整(ACM DL abstract):https://dl.acm.org/doi/abs/10.5555/776816.776828
+- Ko, A. J., et al. (2011). "The state of the art in end-user software engineering." *ACM Computing Surveys, 43*(3), Article 21. https://doi.org/10.1145/1922649.1922658
 
 ### 本專案既有參考論文(方法論參考,非本主題實證來源)
 - （論文集內既有 PDF)"From Awareness to Action: The Effects of Experiential Learning on Educating Users about Dark Patterns." *Proceedings of CHI 2025* (DPTrek). DOI: 10.1145/3706598.3713493。本地檔案:`3706598.3713493.pdf`(本次未重讀,僅承接既有摘要作方法論參考)。
