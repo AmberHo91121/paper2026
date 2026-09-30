@@ -168,7 +168,11 @@
       "license": "ACM",
       "licenseKind": "restricted",
       "titleZh": "我們為何使用又棄用智慧裝置",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Lazar2015/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "Epstein2016",
@@ -253,7 +257,11 @@
       "license": "Wiley",
       "licenseKind": "restricted",
       "titleZh": "IKEA 效應：當勞力帶來喜愛",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Norton2012/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "MacLean1990",
@@ -468,7 +476,11 @@
       "license": "Wiley",
       "licenseKind": "restricted",
       "titleZh": "個人資訊管理：從資訊消費到策展",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Whittaker2011/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "Odom2012",
@@ -490,7 +502,11 @@
       "license": "ACM",
       "licenseKind": "restricted",
       "titleZh": "轉譯中的失落：理解雲端數位物的持有",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Odom2012/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "Hutchins1985",
@@ -551,7 +567,11 @@
       "license": "CC BY",
       "licenseKind": "cc-by",
       "titleZh": "人機互動中的行動主體感經驗：文獻回顧",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Limerick2014/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "Amershi2019",
@@ -604,7 +624,11 @@
       "license": "CC BY 4.0",
       "licenseKind": "cc-by",
       "titleZh": "重新檢視人與 AI 的互動是否、為何、以及如何特別難以設計",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Yang2020/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     },
     {
       "id": "Star1996",
@@ -663,7 +687,11 @@
       "license": "ACM",
       "licenseKind": "restricted",
       "titleZh": "物件生態中的動態",
-      "guideSource": "fulltext"
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Bodker2012/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     }
   ]
 }
