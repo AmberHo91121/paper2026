@@ -17,12 +17,12 @@
 <main class="max-w-4xl mx-auto px-4 py-6 space-y-3" id="list"></main>
 <script>
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const STAGES={A:'Stage A · 領域背景知識',B:'Stage B · 近三年相關研究'};
+const STAGES={A:'背景知識階段',B:'近三年研究階段'};
 const stageOf=p=>p.group.startsWith('B')?'B':'A';
 const groups=[...new Set(PAPERS.map(p=>p.group))];
 const ps=[...PAPERS].sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group)||(a.emerging?1:0)-(b.emerging?1:0)||a.year-b.year);
 const n=k=>ps.filter(p=>stageOf(p)===k).length;
-document.getElementById('count').textContent=`${ps.length} 篇 · Stage A ${n('A')} 篇 · Stage B ${n('B')} 篇（原文 PDF 不入庫）`;
+document.getElementById('count').textContent=`${ps.length} 篇 · 背景知識 ${n('A')} 篇 · 近三年研究 ${n('B')} 篇（原文 PDF 不入庫）`;
 document.getElementById('list').innerHTML=ps.map((p,i)=>{
   const prev=ps[i-1];
   let head='';

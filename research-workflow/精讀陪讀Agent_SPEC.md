@@ -18,13 +18,13 @@ papers/
 
 改任何 md 或 papers.json 後都要重跑 `python papers/build_papers.py`。
 
-## Stages
+## 階段（依序進行，每階段結束都停下等確認）
 
-### Stage 0　收錄與優先序（任何產出之前）
+### 收錄確認階段（任何產出之前）
 
 列出候選論文，每篇附「收錄與否／優先序（高・中・低）／一句理由」（推論）。使用者說「照這樣」才動手；只有收錄的論文寫進 `papers.json`，之後依優先序由高到低、每批回報。
 
-### Stage A　抽取
+### 導讀與草稿階段（抽取）
 
 1. **逐段導讀 `導讀/<id>.md`**：依原文章節順序，每節一兩句中文說明，重要小節條列補充。在 `papers.json` 以 `guideSource`（fulltext／abstract／toc）標明依據。**不做全文翻譯**；只有 `licenseKind` 為 cc-by／cc-by-nc 的論文可另做全文翻譯。專有名詞是否保留英文由使用者決定。
 2. **Critical Form 草稿 `critical-form/<id>/01_抽取草稿.md`**：依下表 13 欄填寫；領域關鍵詞用 `[[關鍵詞]]` 標記（不用 `*...*`，避免與 APA 斜體衝突）。
@@ -46,11 +46,11 @@ papers/
 | 12 | Significance | 信度（邏輯自洽）＋重要性（對領域的關聯），僅草擬觀察（推論） |
 | 13 | Questions | agent 最多草擬 1–2 個引子問題並標「推論」，其餘由使用者寫 |
 
-### Stage B　使用者確認
+### 使用者確認階段
 
-Significance／Discussion／Conclusion 需要學術判斷，**不可省略**。使用者說「可以套版了」才進 Stage C。
+Significance／Discussion／Conclusion 需要學術判斷，**不可省略**。使用者說「可以套版了」才進上文獻站階段。
 
-### Stage C　上文獻站
+### 上文獻站階段
 
 在 `papers.json` 該篇加上 `criticalForm.path`，重跑 `build_papers.py`，由 `paper.html` 呈現。重新產出時保留使用者已寫的 Questions 與筆記。
 

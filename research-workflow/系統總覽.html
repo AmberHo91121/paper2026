@@ -42,15 +42,15 @@ graph TD
     A4 --> EX[訪談/表單執行<br/>人工 + Notion 轉錄]
     EX --> A5[5 洞見萃取]
 
-    A5 -. Stage D 觸發：Pattern 對不上框架 .-> A3
-    A4 -. Stage D 觸發：技法蒐不到需要的資料 .-> A3
+    A5 -. 框架修正階段觸發：Pattern 對不上框架 .-> A3
+    A4 -. 框架修正階段觸發：技法蒐不到需要的資料 .-> A3
     A3 -. 文獻支撐不足，先補查 .-> A1
 
     classDef done fill:#dcfce7,stroke:#16a34a,color:#14532d;
     class A1,A2,A3,A4,A5 done;
           </pre>
         </div>
-        <p class="text-xs text-slate-500 mt-3">實線＝正常往下走；虛線＝ Stage D 診斷式討論觸發的迴圈，一律由你主動發現、主動叫出來，不是自動偵測。</p>
+        <p class="text-xs text-slate-500 mt-3">實線＝正常往下走；虛線＝框架修正階段的診斷式討論觸發的迴圈，一律由你主動發現、主動叫出來，不是自動偵測。</p>
       </section>
 
       <!-- 五個步驟卡片 -->
@@ -66,7 +66,7 @@ graph TD
               <h3 class="font-bold text-slate-800">文獻蒐集</h3>
               <a href="文獻蒐集Agent_SPEC.md" class="text-xs text-slate-400 hover:text-slate-700 underline">SPEC</a>
             </div>
-            <p class="text-sm text-slate-600">Stage A 背景知識 → Stage B 近三年研究 → Stage C 研究缺口。ACM＞Google Scholar＞WoS，以 HCI 大會為主軸，心理學/資訊科學輔助。輸出純 Markdown，不生成 HTML。</p>
+            <p class="text-sm text-slate-600">背景知識 → 近三年研究 → 研究缺口，三階段依序進行。ACM＞Google Scholar＞WoS，以 HCI 大會為主軸，心理學/資訊科學輔助。輸出純 Markdown，不生成 HTML。</p>
           </div>
 
           <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-emerald-400 p-4">
@@ -75,7 +75,7 @@ graph TD
               <h3 class="font-bold text-slate-800">精讀陪讀</h3>
               <a href="精讀陪讀Agent_SPEC.md" class="text-xs text-slate-400 hover:text-slate-700 underline">SPEC</a>
             </div>
-            <p class="text-sm text-slate-600">依 Critical Form 13 欄位整理單篇論文，Stage 0 確認收錄與優先序 → Stage A 逐段導讀＋Critical Form 草稿 → Stage B 你確認 → Stage C 上主題文獻站（papers/）。</p>
+            <p class="text-sm text-slate-600">依 Critical Form 13 欄位整理單篇論文，收錄確認 → 導讀與草稿 → 你確認 → 上主題文獻站（papers/）。</p>
           </div>
 
           <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-violet-400 p-4">
@@ -84,7 +84,7 @@ graph TD
               <h3 class="font-bold text-slate-800">研究架構</h3>
               <a href="研究架構Agent_SPEC.md" class="text-xs text-slate-400 hover:text-slate-700 underline">SPEC</a>
             </div>
-            <p class="text-sm text-slate-600">Stage A 邏輯與缺口對齊評判 → Stage B 你確認 Problem/Aim/Objectives → Stage C 規劃框架＋流程圖 → <strong>Stage D 框架修正協作（整條鏈唯一的正式迴圈）</strong>，6 種偏誤類型幫你我對話時快速定位問題。</p>
+            <p class="text-sm text-slate-600">邏輯評判 → 地基確認（你確認 Problem/Aim/Objectives）→ 框架規劃（含流程圖）→ <strong>框架修正協作（整條鏈唯一的正式迴圈）</strong>，6 種偏誤類型幫你我對話時快速定位問題。</p>
           </div>
 
           <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-amber-400 p-4">
@@ -93,7 +93,7 @@ graph TD
               <h3 class="font-bold text-slate-800">研究設計</h3>
               <a href="研究設計Agent_SPEC.md" class="text-xs text-slate-400 hover:text-slate-700 underline">SPEC</a>
             </div>
-            <p class="text-sm text-slate-600">Stage A 技法提案（半結構訪談/日記法/情境訪查/RtD……）→ Stage B 對話共創執行細節 → Stage C 雙向可回溯性檢查＋依典範套嚴謹判準。強制產出研究倫理與同意書。</p>
+            <p class="text-sm text-slate-600">技法提案（半結構訪談/日記法/情境訪查/RtD……）→ 細節共創 → 定稿檢核：雙向可回溯性檢查＋依典範套嚴謹判準。強制產出研究倫理與同意書。</p>
           </div>
 
           <div class="bg-white rounded-lg border border-slate-200 border-l-4 border-l-rose-400 p-4">
@@ -102,7 +102,7 @@ graph TD
               <h3 class="font-bold text-slate-800">洞見萃取</h3>
               <a href="洞見萃取Agent_SPEC.md" class="text-xs text-slate-400 hover:text-slate-700 underline">SPEC</a>
             </div>
-            <p class="text-sm text-slate-600">九層框架（Raw Data→…→Implication），Stage A 逐句編碼 → Stage B 跨受訪者聚合 → Stage C 詮釋（Why 最多 2 個候選）。整條流程的最後一站。</p>
+            <p class="text-sm text-slate-600">九層框架（Raw Data→…→Implication），逐句編碼 → 跨受訪者聚合 → 詮釋（Why 最多 2 個候選）。整條流程的最後一站。</p>
           </div>
 
         </div>
@@ -117,8 +117,8 @@ graph TD
   00_編輯歷程.md        里程碑摘要（細節交給 git log）
   01_文獻探討/          文獻蒐集：背景知識／近三年研究／研究缺口
   papers/               精讀陪讀：文獻站（逐段導讀、Critical Form、筆記）
-  02_研究問題/          研究架構 Stage A/B
-  03_研究架構/          研究架構 Stage C
+  02_研究問題/          研究架構：邏輯評判、地基確認
+  03_研究架構/          研究架構：框架規劃
   04_研究方法/          研究設計（含研究倫理與同意書）
   05_原始資料/          訪談逐字稿／日記（Notion 轉錄後匯出）
   06_結果/              洞見萃取（含對應研究框架）
