@@ -1,103 +1,59 @@
-# 精讀陪讀 Agent（Close Reading Assistant）— SPEC
+# 步驟 2　精讀陪讀（Close Reading Assistant）SPEC
 
-> 對應 [AI_agent化工作流程草案.md](AI_agent化工作流程草案.md) 的 Agent 2。原草案設計是延伸「考考男」出題模組，這次你指定了新方向：改成依照唐玄輝老師 QDS 課程的 **Critical Form** 架構，把單篇論文整理成結構化資訊，再套用視覺樣板產出 HTML 報告。
-> 沿用既有文件慣例：原本帶 ❓ 待確認欄位供你人工 review，目前已全部定案，內文用「已定案」標記取代 ❓。
+> 共通原則見 [AI_agent化工作流程草案.md](AI_agent化工作流程草案.md)。
+> 依唐玄輝老師 QDS 課程的 **Critical Form** 架構整理單篇論文（[講義](https://drhhtang-pixel.github.io/2026-QDS/week03/#5)）。與 `zotero_notetaking/`（考考男外掛）是兩條獨立的線。
 
----
+## 輸出位置：主題資料夾的 `papers/` 文獻站
 
-## 1. 資料來源
+```
+papers/
+  papers.json              書目來源檔（APA 7、DOI、授權 licenseKind 等）
+  導讀/<id>.md             逐段導讀
+  critical-form/<id>/
+    01_抽取草稿.md          Critical Form 草稿
+    筆記.md                 使用者自由筆記（agent 只建空白檔）
+  build_papers.py          合成 papers.js
+  index.html / paper.html  清單頁／單篇頁（導讀、Critical Form・筆記分頁）
+```
 
-- **表單結構**：[QDS Critical Form_Sample.doc](../../2026_NTUSTcourse/質化設計研究_唐玄輝/QDS%20Critical%20Form_Sample.doc)——7 個頂層欄位：Title/Author(s)、Scope of Research and Major Background、Research Problem(s) and Objectives、Methodology and Steps、Findings and related Supports、Significance and Learnings、Questions
-- **填寫規則**：老師課程講義 [Critical Form 閱讀論文的秘訣](https://drhhtang-pixel.github.io/2026-QDS/week03/#5)，你已經把規則濃縮成本次訊息裡的重點
-- **視覺樣板參考**：同一份講義頁面的實作——Tailwind CSS（CDN）＋ FontAwesome、每個 section 一張卡片、頂部搜尋列（即時過濾卡片內容）、一個「斜體橘色高亮」切換鈕（把內容裡標記為關鍵字的 `<em>` 文字切換成橘色斜體＋淺橘底色）
+改任何 md 或 papers.json 後都要重跑 `python papers/build_papers.py`。
 
-## 2. Critical Form 欄位與抽取規則
+## Stages
 
-把老師表單的欄位跟你補充的規則對齊後，這個 agent 實際要抽取/生成的欄位如下：
+### Stage 0　收錄與優先序（任何產出之前）
 
-| # | 欄位 | 抽取規則 | 人工要注意的地方 |
-|---|---|---|---|
-| 1 | **Reference** | 依論文的 Title、作者欄、出處資訊，判斷來源類型（期刊/書籍/論文集/會議論文）後套用 APA 第七版格式 | 三人作者：前兩人用逗號分隔，最後一人前加 `&`；三人以上同理，在倒數第二人與最後一人間加 `&`。標點（逗號、句號）後要有一個空格。書籍若有編者，姓名要用 First Name 在前的格式（不同於作者的 Last, First 格式）。**agent 產出後你要覆核格式有沒有套對** |
-| 2 | **Scope** | 從關鍵字/摘要判斷領域範圍，**只挑名詞性的領域詞**，不要把研究方法（如「問卷調查」「深度訪談」）誤放進來 | 確認每個詞是否真的是「這篇屬於哪個領域/子題」而不是「這篇用什麼方法做」 |
-| 3 | **Background** | 用一段**完整句子**描述文章奠基的既有知識，通常在文獻探討前段，常伴隨學者姓名+年份的引用 | 檢查是不是真的完整句子，不是關鍵字片段的堆疊 |
-| 4 | **Problem** | 文章想解決的問題/假設，通常在 Abstract，**句尾必須是問號** | 確認 agent 有沒有忘記把敘述句轉成問句 |
-| 5 | **Aim（原 Purpose）** | 研究的整體目的，**通常只有一句** | 跟 Objectives 不要混在一起——Aim 是單一句子的目的，不是條列 |
-| 6 | **Objectives** | 達成 Aim 所展開的具體目標，**通常 2–3 個以上**，條列呈現 | 這是表單裡原本沒有獨立列出、這次新增要求要單獨列的欄位，agent 容易漏掉或跟 Aim 合併，要特別檢查 |
-| 7 | **Methodology** | 研究方法的名稱/類型（名詞），例如「個案研究」「內容分析」 | 跟 Steps 分清楚：這裡只講「用什麼方法」 |
-| 8 | **Steps** | 執行方法的具體步驟（人事時地物＋分析架構），**過程不是結果** | 確認寫的是「怎麼做」，不是提前劇透「做出了什麼」 |
-| 9 | **Results** | 研究結果的資訊/數據（圖表、數字），**只陳述不評論** | 檢查有沒有夾帶 agent 自己的評價字眼 |
-| 10 | **Discussion** | 針對 Results 的分析，**要呼應論文原本提出的研究問題/假設** | 確認有沒有真的回扣到 Problem，而不是憑空延伸 |
-| 11 | **Conclusion** | 把研究發現轉化為新知識，通常包含對未來研究方向的延伸敘述 | 檢查是不是真的有「新知識」的總結，不是 Results 的重複 |
-| 12 | **Significance** | 兩個子判準：**信度**（研究架構與推理過程是否邏輯自洽）、**重要性**（相對於領域現況與未來研究發展的關聯） | 這兩個子判準 agent 只能先草擬觀察，最終判斷屬於你自己的學術判斷 |
-| 13 | **Questions** | **不由 agent 生成**——這是你自己閱讀後要提出的疑問，留白 | — |
+列出候選論文，每篇附「收錄與否／優先序（高・中・低）／一句理由」（推論）。使用者說「照這樣」才動手；只有收錄的論文寫進 `papers.json`，之後依優先序由高到低、每批回報。
 
-## 3. Pipeline 設計：四階段
+### Stage A　抽取
 
-跟文獻蒐集/洞見萃取兩個 agent 一樣的邏輯：抽取（機械式）跟你的學術判斷（人工）要分開，避免 agent 的判斷力不足的地方被藏在一次性產出裡看不出來。
+1. **逐段導讀 `導讀/<id>.md`**：依原文章節順序，每節一兩句中文說明，重要小節條列補充。在 `papers.json` 以 `guideSource`（fulltext／abstract／toc）標明依據。**不做全文翻譯**；只有 `licenseKind` 為 cc-by／cc-by-nc 的論文可另做全文翻譯。專有名詞是否保留英文由使用者決定。
+2. **Critical Form 草稿 `critical-form/<id>/01_抽取草稿.md`**：依下表 13 欄填寫；領域關鍵詞用 `[[關鍵詞]]` 標記（不用 `*...*`，避免與 APA 斜體衝突）。
+3. **`筆記.md`**：只建空白起始檔。
 
-### Stage 0 — 收錄與優先序確認（新增，任何產出之前）
+| # | 欄位 | 規則（覆核重點） |
+|---|---|---|
+| 1 | Reference | APA 7；附 DOI／連結（作者 `&`、標點後空格、編者名字在前） |
+| 2 | Scope | 只放名詞性領域詞，不放研究方法 |
+| 3 | Background | 完整句子描述奠基的既有知識 |
+| 4 | Problem | 句尾必須是問號 |
+| 5 | Aim | 通常一句，不與 Objectives 混 |
+| 6 | Objectives | 2–3 個以上，條列（最常被漏掉或併入 Aim） |
+| 7 | Methodology | 方法名稱（名詞） |
+| 8 | Steps | 怎麼做（人事時地物＋分析架構），不劇透結果 |
+| 9 | Results | 只陳述不評論 |
+| 10 | Discussion | 必須回扣 Problem |
+| 11 | Conclusion | 轉化為新知識與未來方向，不重複 Results |
+| 12 | Significance | 信度（邏輯自洽）＋重要性（對領域的關聯），僅草擬觀察（推論） |
+| 13 | Questions | agent 最多草擬 1–2 個引子問題並標「推論」，其餘由使用者寫 |
 
-- **觸發時機**：有新論文要進這個專案、或要開始做逐段導讀／Critical Form 之前。**一篇都還沒確認前，不產出任何導讀或精讀內容**
-- **agent 提案**：列出候選論文，每篇附上建議（標「推論」）：
-  - **收錄與否**：跟這個專案的研究問題有沒有關係；不收錄的論文留在資料夾、不刪，只是不進這個專案的文獻清單
-  - **優先序**：高（直接支撐研究問題或框架，先做）／中（相關脈絡或方法參考）／低（邊緣參考，有空再做）
-  - **理由**：一句話說明判斷依據
-- **人工 review 點**：你確認或修改每篇的收錄與優先序，明確說「照這樣」才往下做
-- **紀錄方式**：決定寫進 `papers.json` 的 `include`、`priority` 欄位；之後的導讀與 Critical Form 依優先序由高到低進行，每做完一批停下來回報
+### Stage B　使用者確認
 
-### Stage A — 資訊抽取（單篇論文）
+Significance／Discussion／Conclusion 需要學術判斷，**不可省略**。使用者說「可以套版了」才進 Stage C。
 
-- **輸入**：論文全文（PDF/文字）
-- **輸出**：
-  1. 依第 2 節欄位表逐一填寫的 Markdown 草稿（`01_抽取草稿.md`），Reference 之外的每個欄位如果內容裡有值得標記的**領域關鍵詞**，用 `[[關鍵詞]]` 標起來——這對應到 Stage C 視覺樣板裡的高亮功能。故意不用 Markdown 斜體 `*...*`，因為 Reference 欄位本來就需要斜體來標示期刊/會議名稱（APA格式），如果兩種用途共用同一個標記，高亮開關會連 APA 格式的斜體一起誤標成關鍵字（試跑範本時就踩到這個問題，已修正）
-  2. **逐段導讀 `導讀/<id>.md`**（取代原本的「翻譯摘要」）——依論文原本的章節順序，每個章節用一兩句中文說明在講什麼，重要小節條列補充。**不做全文翻譯**：多數論文的授權不允許散布全文翻譯，而且你要的是讀原文前先掌握結構。**人工 review 點**：專有名詞／構念名稱要不要保留英文原文，由你決定
-  3. **新增：`筆記.md`**——agent 只建立一個空白起始檔（帶一個簡單標題），內容完全是你自己讀後自由寫的東西，不是 agent 產出的一部分。這個檔案存在的意義只是「幫你在對的地方先開一個位置」，不要跟 Critical Form 裡的 Questions 卡片搞混——Questions 是針對這篇論文的結構化追問，筆記是更自由、什麼都能寫的空間
-- **人工 review 點**：逐欄位核對——尤其 Problem 是否真的以問號結尾、Aim 跟 Objectives 有沒有混淆、Results 有沒有夾帶評論、Reference 格式對不對
+### Stage C　上文獻站
 
-### Stage B — 你確認內容
+在 `papers.json` 該篇加上 `criticalForm.path`，重跑 `build_papers.py`，由 `paper.html` 呈現。重新產出時保留使用者已寫的 Questions 與筆記。
 
-- 你看過 Stage A 草稿、修正或補充後，明確跟我說「可以套版了」
-- **這一步不能省略**：Significance 欄位本質上是學術判斷，Discussion／Conclusion 也需要你確認有沒有真的呼應 Problem，這些不是機械式抽取能保證正確的地方
+## 視覺規格
 
-### Stage C — 套版產出 HTML
-
-- **輸入**：Stage B 確認後的內容
-- **處理**：套用第 4 節的視覺樣板，把 `[[關鍵詞]]` 轉成 HTML 的 `<span class="key-term">`（跟 APA 格式需要的 `<em>` 斜體分開處理，互不干擾）
-- **輸出**：`critical-form.html`（逐段導讀、`筆記.md` 在 Stage A 就已經產生／建立，Stage C 不動它們）
-
-## 4. 視覺樣板規格
-
-技術棧沿用你參考的講義頁面做法：
-
-- **Tailwind CSS**：CDN 引入（`<script src="https://cdn.tailwindcss.com">`）
-- **FontAwesome**：CDN 引入（用 icon 版標題、搜尋圖示等）
-- **版面**：深色 header（標題＋APA引用一句話摘要）→ 搜尋列（放大鏡 icon＋輸入框，即時比對每張卡片文字內容，不符合的卡片隱藏）→ 主體 13 個欄位分組成 7 張卡片（Reference｜Scope+Background｜Problem+Aim+Objectives｜Methodology+Steps｜Results+Discussion+Conclusion｜Significance｜Questions）
-- **每節專屬配色**（你這次新增的要求，原講義頁面其實 7 節都用同一個藍色，這次要做出區隔）：
-
-  | 卡片 | 主題色 |
-  |---|---|
-  | 1 Reference | blue |
-  | 2 Scope & Background | emerald |
-  | 3 Problem／Aim／Objectives | violet |
-  | 4 Methodology／Steps | amber |
-  | 5 Results／Discussion／Conclusion | rose |
-  | 6 Significance | cyan |
-  | 7 Questions | slate（刻意用中性灰，跟前面 6 張「agent 產出」的卡片做區隔，提醒這張是「你要自己寫」） |
-
-  每張卡片：編號徽章用該色的 `-600`、卡片左側一條 `-400` 的色條、標題下底線用該色的 `-200`，卡片背景維持中性淺灰以確保文字可讀性
-- **高亮關鍵字開關**：按鈕切換 `<body>` 的一個 class（`keyword-highlight`），CSS 規則讓該 class 生效時，標記為 `<span class="key-term">` 的文字變成橘色文字＋淺橘底色＋斜體；平常不開時完全不特別顯眼。刻意跟 `<em>`（APA 格式斜體用）分開，避免兩種標記互相干擾
-- **搜尋列**：輸入關鍵字即時比對每張卡片的文字內容，不符合的卡片整張隱藏（不是逐句高亮比對，是整卡顯示/隱藏）
-
-我已經先做了一份範本檔 [精讀報告_template.html](精讀報告_template.html)（demo 內容，非真實論文），你可以直接打開看視覺效果對不對。
-
-## 5. 輸出檔案位置
-
-**已修正**：原本設計是「你每次明確指定要輸出到哪個資料夾」，現在改成對應 [研究主題Repo_資訊架構.md](研究主題Repo_資訊架構.md) 的固定慣例——每篇論文一個子資料夾 `01_文獻探討/critical-form/<論文簡稱>/`，裡面放 `critical-form.html`、`翻譯摘要.md`、`筆記.md` 三個檔案（改版：原本只有單一 html 檔案，現在是一個子資料夾）。你還是要明確指定「是哪個研究主題資料夾」，但底下的子路徑已經是固定慣例，不用每次重新決定檔名放哪。
-
-**新增（解決版本控制不一致的問題）**：因為現在整個主題資料夾是 git repo，Questions 卡片你自己補充的內容如果被不小心覆蓋，可以直接從 git commit history 救回來——不用再像以前那樣只能靠「agent 記得保留」這種容易出錯的操作規則硬撐。但 agent 重新產出 Stage C 時，還是會先讀現有檔案、盡量保留你已經寫的 Questions 內容，git 是保險，不是「反正可以救回來就隨便覆蓋」的藉口。
-
-## 6. 其他決定事項
-
-- **Questions 卡片**：agent 先草擬 1-2 個「可能值得追問」的問題當引子，同樣明確標「推論，僅供參考」——比留白更有幫助，且已經標明不是定論，不會誤導你
-- **APA 格式版本**：預設用第七版（跟講義一致）。之後真的遇到論文明確要求其他格式（ACP/MLA）再個別調整，不先做成多格式切換——目前用不到的彈性先不做
-- **連結回原文**：Reference 卡片附上論文的 DOI 或連結，方便你之後點開對照原文
+Tailwind CDN＋FontAwesome；深色 header、搜尋列（整卡過濾）、關鍵詞高亮開關（`[[…]]` → `<span class="key-term">`，與 `<em>` 分開）。13 欄分成 7 張卡，配色：Reference blue／Scope・Background emerald／Problem・Aim・Objectives violet／Methodology・Steps amber／Results・Discussion・Conclusion rose／Significance cyan／Questions slate。範本：[精讀報告_template.html](精讀報告_template.html)。
