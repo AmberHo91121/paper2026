@@ -10,34 +10,63 @@
 <script src="papers.js"></script>
 </head>
 <body class="bg-slate-100 text-slate-800">
-<header class="bg-slate-900 text-white"><div class="max-w-4xl mx-auto px-4 py-8">
+<header class="bg-slate-900 text-white"><div class="max-w-4xl mx-auto px-4 pt-6 pb-7">
 <a href="../../index.html" class="text-slate-400 text-sm hover:text-white">所有資料夾</a>
-<h1 class="text-2xl font-bold mt-2">文獻清單</h1>
-<p id="count" class="text-slate-400 text-sm mt-1"></p></div></header>
-<main class="max-w-4xl mx-auto px-4 py-6 space-y-3" id="list"></main>
+<div class="flex items-end justify-between gap-4 mt-3 flex-wrap">
+<div><h1 class="text-3xl font-bold tracking-tight">文獻清單</h1>
+<p class="text-slate-400 text-sm mt-1">依年份由新到舊（原文 PDF 不入庫）</p></div>
+<div id="stats" class="flex gap-2 text-xs flex-wrap"></div></div></div></header>
+<div class="sticky top-0 z-10 bg-slate-100/95 backdrop-blur border-b border-slate-200"><div class="max-w-4xl mx-auto px-4 py-2.5 flex flex-wrap gap-3 items-center text-sm">
+<span class="text-slate-400 text-xs font-semibold tracking-wide">篩選</span>
+<label class="text-slate-500">閱讀狀態 <select id="fRead" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800"><option value="">全部</option><option>未讀</option><option>粗讀</option><option>精讀</option></select></label>
+<label class="text-slate-500">是否收錄 <select id="fKeep" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800"><option value="">全部</option><option>未決定</option><option>收錄</option><option>不收錄</option></select></label>
+<span id="shown" class="text-slate-400 text-xs"></span>
+<button id="exp" class="ml-auto text-xs border border-slate-300 rounded px-2.5 py-1 bg-white hover:border-violet-400 text-slate-600">複製收錄清單</button></div></div>
+<main class="max-w-4xl mx-auto px-4 pb-16 pt-2" id="list"></main>
 <script>
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
 const KEY='paperStatus:intimateData';
 let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
 const READ=['未讀','粗讀','精讀'],KEEP=['未決定','收錄','不收錄'];
+const rd=p=>(st[p.id]||{}).read||'未讀',kp=p=>(st[p.id]||{}).keep||'未決定';
+const KEEPCLS={'收錄':'border-l-emerald-500','不收錄':'border-l-slate-300 opacity-60','未決定':'border-l-slate-200'};
+const READCLS={'未讀':'text-slate-500','粗讀':'bg-amber-50 border-amber-300 text-amber-800','精讀':'bg-violet-50 border-violet-300 text-violet-800'};
+const KEEPSEL={'未決定':'text-slate-500','收錄':'bg-emerald-50 border-emerald-300 text-emerald-800','不收錄':'text-slate-400'};
+const SEL='border rounded-full px-3 py-1 text-xs font-medium bg-white border-slate-300 cursor-pointer ';
 const opts=(arr,v)=>arr.map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('');
-const card=(p,metaHtml)=>{const s=st[p.id]||{};
-return `<div class="bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4" data-id="${esc(p.id)}">
-<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block">
-<p class="text-xs text-slate-400">${metaHtml}</p>
-<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
-<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>
-<div class="flex gap-3 mt-3 text-sm">
-<label class="text-slate-500">閱讀狀態 <select data-k="read" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(READ,s.read||'未讀')}</select></label>
-<label class="text-slate-500">是否收錄 <select data-k="keep" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(KEEP,s.keep||'未決定')}</select></label>
-</div></div>`};
-const bindStatus=()=>document.querySelectorAll('select[data-k]').forEach(el=>el.onchange=()=>{
-  const id=el.closest('[data-id]').dataset.id;(st[id]=st[id]||{})[el.dataset.k]=el.value;
-  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}});
+const card=(p,chips)=>`<div class="bg-white rounded-lg border border-slate-200 border-l-4 ${KEEPCLS[kp(p)]} p-4 mt-3" data-id="${esc(p.id)}">
+<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block group">
+<p class="text-xs text-slate-400 flex flex-wrap gap-x-2">${chips}</p>
+<h4 class="text-lg font-bold text-slate-900 leading-snug mt-1 group-hover:text-violet-700">${esc(p.titleZh||p.title)}</h4>
+${p.titleZh?`<p class="text-sm text-slate-600 mt-0.5">${esc(p.title)}</p>`:''}
+<p class="text-xs text-slate-400 mt-2 line-clamp-2">${esc(p.apa.replace(/\*/g,''))}</p></a>
+<div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-100">
+<select data-k="read" class="${SEL}${READCLS[rd(p)]}">${opts(READ,rd(p))}</select>
+<select data-k="keep" class="${SEL}${KEEPSEL[kp(p)]}">${opts(KEEP,kp(p))}</select></div></div>`;
+const vis=p=>{const r=document.getElementById('fRead').value,k=document.getElementById('fKeep').value;return(!r||rd(p)===r)&&(!k||kp(p)===k)};
 const ps=[...PAPERS].sort((a,b)=>b.year-a.year);
-document.getElementById('count').textContent=ps.length+' 篇（原文 PDF 不入庫）';
-document.getElementById('list').innerHTML=ps.map(p=>card(p,`${esc(p.venueShort||'')} · ${p.year} · ${esc(p.license||'')}`)).join('');
-bindStatus();
+const body=fs=>fs.map(p=>card(p,[`<span class="font-semibold text-slate-500">${p.year}</span>`,esc(p.venueShort||''),esc(p.license||'')].filter(Boolean).join('<span>·</span>'))).join('');
+const stats=()=>{const c=(f,v)=>ps.filter(p=>f(p)===v).length;
+  document.getElementById('stats').innerHTML=
+   `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-200">收錄 ${c(kp,'收錄')}</span><span class="px-2.5 py-1 rounded-full bg-white/10 text-slate-300">未決定 ${c(kp,'未決定')}</span><span class="px-2.5 py-1 rounded-full bg-white/10 text-slate-300">不收錄 ${c(kp,'不收錄')}</span><span class="px-2.5 py-1 rounded-full bg-violet-500/20 text-violet-200">精讀 ${c(rd,'精讀')} / 粗讀 ${c(rd,'粗讀')} / 未讀 ${c(rd,'未讀')}</span>`};
+const bind=()=>document.querySelectorAll('select[data-k]').forEach(el=>el.onchange=()=>{
+  const box=el.closest('[data-id]'),id=box.dataset.id;(st[id]=st[id]||{})[el.dataset.k]=el.value;
+  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}
+  const p=ps.find(x=>x.id===id);
+  box.className=box.className.replace(/border-l-\S+|opacity-60/g,'').trim()+' '+KEEPCLS[kp(p)];
+  const [a,b]=box.querySelectorAll('select');a.className=SEL+READCLS[rd(p)];b.className=SEL+KEEPSEL[kp(p)];
+  stats();});
+const render=()=>{
+  const fs=ps.filter(vis);
+  document.getElementById('shown').textContent=fs.length===ps.length?ps.length+' 篇':`顯示 ${fs.length} / ${ps.length} 篇`;
+  document.getElementById('list').innerHTML=fs.length?body(fs):'<p class="text-slate-400 text-center py-16">沒有符合條件的文獻</p>';
+  bind();stats();};
+document.getElementById('fRead').onchange=document.getElementById('fKeep').onchange=render;
+document.getElementById('exp').onclick=e=>{
+  const t=ps.filter(p=>kp(p)==='收錄').map(p=>p.id+'\t'+(p.titleZh||p.title)).join('\n');
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>e.target.textContent='已複製',()=>prompt('複製收錄清單',t));
+  setTimeout(()=>e.target.textContent='複製收錄清單',1500);};
+render();
 </script>
 </body></html>
