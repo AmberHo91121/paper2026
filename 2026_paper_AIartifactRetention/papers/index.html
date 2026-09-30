@@ -19,6 +19,24 @@
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const STAGES={A:'背景知識階段',B:'近三年研究階段'};
 const stageOf=p=>p.group.startsWith('B')?'B':'A';
+
+const KEY='paperStatus:AIartifactRetention';
+let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const READ=['未讀','粗讀','精讀'],KEEP=['未決定','收錄','不收錄'];
+const opts=(arr,v)=>arr.map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('');
+const card=(p,metaHtml)=>{const s=st[p.id]||{};
+return `<div class="bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4" data-id="${esc(p.id)}">
+<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block">
+<p class="text-xs text-slate-400">${metaHtml}</p>
+<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
+<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>
+<div class="flex gap-3 mt-3 text-sm">
+<label class="text-slate-500">閱讀狀態 <select data-k="read" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(READ,s.read||'未讀')}</select></label>
+<label class="text-slate-500">是否收錄 <select data-k="keep" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(KEEP,s.keep||'未決定')}</select></label>
+</div></div>`};
+const bindStatus=()=>document.querySelectorAll('select[data-k]').forEach(el=>el.onchange=()=>{
+  const id=el.closest('[data-id]').dataset.id;(st[id]=st[id]||{})[el.dataset.k]=el.value;
+  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}});
 const groups=[...new Set(PAPERS.map(p=>p.group))];
 const ps=[...PAPERS].sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group)||(a.emerging?1:0)-(b.emerging?1:0)||a.year-b.year);
 const n=k=>ps.filter(p=>stageOf(p)===k).length;
@@ -29,10 +47,8 @@ document.getElementById('list').innerHTML=ps.map((p,i)=>{
   if(!prev||stageOf(p)!==stageOf(prev)) head+=`<h2 class="text-lg font-bold text-slate-900 pt-6 border-b border-slate-300 pb-1">${STAGES[stageOf(p)]}</h2>`;
   if(!prev||p.group!==prev.group) head+=`<h3 class="text-sm font-bold text-slate-500 pt-3">${esc(p.group)}</h3>`;
   const meta=[esc(p.venueShort||''),p.year,esc(p.license||''),p.citations?'引用 '+esc(p.citations):''].filter(Boolean).join(' · ');
-  return head+`<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4">
-<p class="text-xs text-slate-400">${p.emerging?'<span class="text-emerald-700 font-semibold">🌱 新興 · </span>':''}${meta}</p>
-<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
-<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>`;
+  return head+card(p,`${p.emerging?'<span class="text-emerald-700 font-semibold">🌱 新興 · </span>':''}${meta}`);
 }).join('');
+bindStatus();
 </script>
 </body></html>

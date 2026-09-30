@@ -17,11 +17,27 @@
 <main class="max-w-4xl mx-auto px-4 py-6 space-y-3" id="list"></main>
 <script>
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+const KEY='paperStatus:intimateData';
+let st={};try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const READ=['未讀','粗讀','精讀'],KEEP=['未決定','收錄','不收錄'];
+const opts=(arr,v)=>arr.map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('');
+const card=(p,metaHtml)=>{const s=st[p.id]||{};
+return `<div class="bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4" data-id="${esc(p.id)}">
+<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block">
+<p class="text-xs text-slate-400">${metaHtml}</p>
+<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
+<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>
+<div class="flex gap-3 mt-3 text-sm">
+<label class="text-slate-500">閱讀狀態 <select data-k="read" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(READ,s.read||'未讀')}</select></label>
+<label class="text-slate-500">是否收錄 <select data-k="keep" class="ml-1 border border-slate-300 rounded px-2 py-1 bg-white text-slate-800">${opts(KEEP,s.keep||'未決定')}</select></label>
+</div></div>`};
+const bindStatus=()=>document.querySelectorAll('select[data-k]').forEach(el=>el.onchange=()=>{
+  const id=el.closest('[data-id]').dataset.id;(st[id]=st[id]||{})[el.dataset.k]=el.value;
+  try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}});
 const ps=[...PAPERS].sort((a,b)=>b.year-a.year);
 document.getElementById('count').textContent=ps.length+' 篇（原文 PDF 不入庫）';
-document.getElementById('list').innerHTML=ps.map(p=>`<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4">
-<p class="text-xs text-slate-400">${esc(p.venueShort||'')} · ${p.year} · ${esc(p.license||'')}</p>
-<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
-<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>`).join('');
+document.getElementById('list').innerHTML=ps.map(p=>card(p,`${esc(p.venueShort||'')} · ${p.year} · ${esc(p.license||'')}`)).join('');
+bindStatus();
 </script>
 </body></html>
