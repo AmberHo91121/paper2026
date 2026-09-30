@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文獻清單 — AI生成物留存率</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>body{font-family:'Noto Sans TC',sans-serif}</style>
+<script src="papers.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white"><div class="max-w-4xl mx-auto px-4 py-8">
+<a href="../../index.html" class="text-slate-400 text-sm hover:text-white">所有資料夾</a>
+<h1 class="text-2xl font-bold mt-2">文獻清單</h1>
+<p id="count" class="text-slate-400 text-sm mt-1"></p></div></header>
+<main class="max-w-4xl mx-auto px-4 py-6 space-y-3" id="list"></main>
+<script>
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const groups=[...new Set(PAPERS.map(p=>p.group))];
+const ps=[...PAPERS].sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group)||a.year-b.year);
+document.getElementById('count').textContent=ps.length+' 篇 · Stage A 背景知識（原文 PDF 不入庫）';
+document.getElementById('list').innerHTML=ps.map((p,i)=>(i===0||p.group!==ps[i-1].group?`<h2 class="text-sm font-bold text-slate-500 pt-4">${esc(p.group)}</h2>`:'')+`<a href="paper.html?id=${encodeURIComponent(p.id)}" class="block bg-white rounded-lg border border-slate-200 hover:border-violet-300 p-4">
+<p class="text-xs text-slate-400">${esc(p.venueShort||'')} · ${p.year} · ${esc(p.license||'')}</p>
+<p class="font-semibold text-slate-900">${esc(p.titleZh||p.title)}</p>
+<p class="text-sm text-slate-500 mt-1">${esc(p.apa.replace(/\*/g,''))}</p></a>`).join('');
+</script>
+</body></html>
