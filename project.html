@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研究專案 — paper2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="projects.js"></script>
+<style>
+  body { font-family: 'Noto Sans TC', sans-serif; }
+  .md h1 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 .5rem; color: #0f172a; }
+  .md h2 { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 2.2rem 0 .75rem; padding-bottom: .4rem; border-bottom: 2px solid #0f172a; scroll-margin-top: 7rem; }
+  .md h3 { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 1.4rem 0 .4rem; scroll-margin-top: 7rem; }
+  .md h4 { font-weight: 700; margin: 1rem 0 .3rem; }
+  .md p, .md li { line-height: 1.8; font-size: .95rem; }
+  .md p { margin: .6rem 0; }
+  .md ul { list-style: disc; padding-left: 1.4rem; margin: .4rem 0; }
+  .md ol { list-style: decimal; padding-left: 1.4rem; margin: .4rem 0; }
+  .md strong { color: #0f172a; }
+  .md a { color: #6d28d9; text-decoration: underline; word-break: break-word; }
+  .md hr { border: 0; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
+  .md code { background: #f1f5f9; padding: 0 .3rem; border-radius: 4px; font-size: .85em; }
+  .md pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: .5rem; overflow-x: auto; font-size: .8rem; line-height: 1.6; margin: .8rem 0; }
+  .md pre code { background: none; color: inherit; padding: 0; }
+  .md blockquote { background: #fffbeb; border-left: 4px solid #f59e0b; padding: .5rem 1rem; border-radius: 0 .5rem .5rem 0; margin: 1rem 0; }
+  .md table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 1rem 0; display: block; overflow-x: auto; }
+  .md th { background: #f1f5f9; text-align: left; font-weight: 700; }
+  .md th, .md td { border: 1px solid #e2e8f0; padding: .4rem .6rem; vertical-align: top; }
+  .gcard h3 { margin: 0 0 .5rem; font-size: 1.15rem; }
+  .gcard .gid { display: inline-block; background: #7c3aed; color: #fff; font-size: .8rem; padding: .1rem .55rem; border-radius: 999px; margin-right: .5rem; vertical-align: middle; }
+  .gcard { scroll-margin-top: 7rem; }
+  [role="tab"][aria-selected="true"] { color: #6d28d9; border-color: #7c3aed; }
+  .pill[aria-pressed="true"] { background: #6d28d9; color: #fff; border-color: #6d28d9; }
+  .node { position: relative; }
+  .node[aria-pressed="true"] { border-color: #7c3aed; box-shadow: 0 0 0 3px #ddd6fe; }
+  @media (min-width: 768px) {
+    .row .node:not(:last-child)::after { content: '→'; position: absolute; right: -1.15rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.1rem; }
+  }
+  @media (max-width: 767px) {
+    .row .node:not(:last-child)::after { content: '↓'; position: absolute; left: 50%; bottom: -1.2rem; transform: translateX(-50%); color: #94a3b8; }
+  }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<header class="bg-slate-900 text-white"><div class="max-w-5xl mx-auto px-4 pt-6 pb-6">
+  <a href="index.html" class="text-slate-400 text-sm hover:text-white">所有專案</a>
+  <div class="flex flex-wrap items-end justify-between gap-4 mt-3">
+    <div><h1 id="ptitle" class="text-3xl font-bold tracking-tight"></h1><p id="psub" class="text-slate-400 text-sm mt-1"></p></div>
+    <a id="plist" class="text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white rounded-full px-4 py-1.5">文獻清單 →</a>
+  </div>
+</div></header>
+<nav class="sticky top-0 z-20 bg-white border-b border-slate-200"><div class="max-w-5xl mx-auto px-2 flex overflow-x-auto" role="tablist" id="tabs"></div></nav>
+<main class="max-w-5xl mx-auto px-4 py-6" id="main"></main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pid = new URLSearchParams(location.search).get('p');
+const P = (window.PROJECTS || {})[pid];
+const TABS = [['lit', '文獻回顧'], ['gap', '研究缺口'], ['rq', '研究問題'], ['framework', '研究架構']];
+const STATE = { done: ['完成', 'bg-emerald-100 text-emerald-800'], draft: ['進行中', 'bg-amber-100 text-amber-800'], todo: ['未開始', 'bg-slate-200 text-slate-600'] };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const chip = (txt, cls) => `<span class="text-xs px-2.5 py-1 rounded-full ${cls}">${esc(txt)}</span>`;
+
+if (!P) {
+  $('#ptitle').textContent = '找不到專案';
+  $('#tabs').innerHTML = '';
+  $('#plist').style.display = 'none';
+  $('#main').innerHTML = '<p class="text-slate-500">可用的專案：' + Object.keys(window.PROJECTS || {}).map(k => `<a class="text-violet-700 underline mx-1" href="project.html?p=${k}">${k}</a>`).join('') + '</p>';
+} else init();
+
+function init() {
+  document.title = P.title + ' — paper2026';
+  $('#ptitle').textContent = P.title;
+  $('#psub').textContent = P.subtitle || '';
+  $('#plist').href = P.papersUrl;
+  $('#tabs').innerHTML = TABS.map(([id, name]) =>
+    `<button role="tab" data-tab="${id}" class="shrink-0 px-4 py-3 text-sm font-medium text-slate-500 border-b-2 border-transparent hover:text-slate-800">${name}</button>`).join('');
+  $('#tabs').onclick = e => { const b = e.target.closest('[data-tab]'); if (b) show(b.dataset.tab); };
+  addEventListener('hashchange', () => show(location.hash.slice(1), true));
+  const s = document.createElement('script');
+  s.src = P.papersJs; s.onload = s.onerror = () => show(TABS.some(t => t[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'lit', true);
+  document.head.appendChild(s);
+}
+
+function show(id, fromHash) {
+  if (!TABS.some(t => t[0] === id)) id = 'lit';
+  if (!fromHash) history.replaceState(null, '', '#' + id);
+  document.querySelectorAll('[role=tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === id));
+  const main = $('#main'); main.innerHTML = '';
+  ({ lit: tabLit, gap: tabGap, rq: tabRq, framework: tabFramework })[id](main);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- markdown ---------- */
+function renderMd(md) {
+  const root = document.createElement('div');
+  root.innerHTML = DOMPurify.sanitize(marked.parse(md));
+  const h1 = root.querySelector('h1'); if (h1) h1.remove();
+  const box = document.createElement('div'); box.className = 'md';
+  let card = null; const gids = []; let n = 0;
+  for (const el of [...root.childNodes]) {
+    if (el.nodeName === 'H2') { card = null; el.id = 'h' + (++n); box.appendChild(el); continue; }
+    if (el.nodeName === 'H3' && /^缺口[：:]/.test(el.textContent)) {
+      const m = el.textContent.match(/^缺口[：:]\s*(G\d+)\s*(.*)$/);
+      card = document.createElement('section');
+      card.className = 'gcard bg-white rounded-lg border border-slate-200 border-l-4 border-l-violet-500 p-5 mt-4';
+      if (m) { card.id = m[1].toLowerCase(); el.innerHTML = `<span class="gid">${m[1]}</span>${esc(m[2])}`; gids.push([m[1], card.id]); }
+      card.appendChild(el); box.appendChild(card); continue;
+    }
+    if (el.nodeName === 'H3') el.id = 'h' + (++n);
+    if (el.nodeName === 'HR' && card) continue;
+    (card || box).appendChild(el);
+  }
+  const heads = [...box.querySelectorAll(':scope > h2')].map(h => [h.textContent, h.id]);
+  return { el: box, gids, heads };
+}
+
+function docViewer(docs, emptyMsg) {
+  const wrap = document.createElement('div');
+  if (!docs.length) { wrap.innerHTML = `<p class="text-slate-400 py-10 text-center">${emptyMsg}</p>`; return wrap; }
+  wrap.innerHTML = `<div class="sticky top-[49px] z-10 -mx-4 px-4 py-2 bg-slate-100/95 backdrop-blur border-b border-slate-200 flex flex-wrap gap-2 items-center" id="dv-bar"></div>
+  <p class="text-xs text-slate-400 mt-3" id="dv-src"></p><div id="dv-body" class="mt-2"></div>`;
+  const bar = wrap.querySelector('#dv-bar'), body = wrap.querySelector('#dv-body');
+  const open = i => {
+    const d = docs[i];
+    const r = renderMd(d.md);
+    wrap.querySelector('#dv-src').textContent = '來源：' + d.src;
+    body.innerHTML = ''; body.appendChild(r.el);
+    const jump = r.gids.length ? r.gids : r.heads.slice(0, 14);
+    bar.innerHTML = (docs.length > 1 ? docs.map((x, j) => `<button class="pill text-sm border border-slate-300 bg-white rounded-full px-3 py-1" aria-pressed="${j === i}" data-i="${j}">${esc(x.title)}</button>`).join('') + '<span class="w-px h-5 bg-slate-300 mx-1"></span>' : '') +
+      (jump.length ? '<span class="text-xs text-slate-400 font-semibold">跳至</span>' + jump.map(([t, id]) => `<a href="#${id}" data-jump="${id}" class="text-xs px-2.5 py-1 rounded-full bg-white border border-slate-300 hover:border-violet-400 hover:text-violet-700">${esc(t.length > 14 ? t.slice(0, 14) + '…' : t)}</a>`).join('') : '');
+    bar.onclick = e => {
+      const p = e.target.closest('[data-i]'); if (p) { open(+p.dataset.i); window.scrollTo(0, 0); return; }
+      const j = e.target.closest('[data-jump]'); if (j) { e.preventDefault(); const t = document.getElementById(j.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    };
+  };
+  open(0);
+  return wrap;
+}
+
+/* ---------- tab: 文獻回顧 ---------- */
+function tabLit(main) {
+  const papers = window.PAPERS || [];
+  const st = store.get(P.statusKey, {});
+  const cnt = (k, v, dflt) => papers.filter(p => ((st[p.id] || {})[k] || dflt) === v).length;
+  const cf = papers.filter(p => p.criticalFormMd).length;
+  const stats = [
+    ['文獻站收錄', papers.length + ' 篇'], ['標為收錄', cnt('keep', '收錄', '未決定') + ' 篇'], ['精讀', cnt('read', '精讀', '未讀') + ' 篇'], ['Critical Form', cf + ' 篇']
+  ];
+  const steps = (P.pipeline || []).map((s, i) => `<div class="bg-white border border-slate-200 rounded-lg p-3 flex-1 min-w-[10rem]">
+    <p class="text-xs text-slate-400">${i + 1}</p><p class="font-bold text-slate-900 text-sm">${esc(s.label)}</p>
+    <p class="text-lg font-bold text-violet-700 mt-1">${esc(s.n.replace('{cf}', cf))}</p><p class="text-xs text-slate-500 mt-1">${esc(s.note)}</p></div>`).join('<div class="hidden md:flex items-center text-slate-300">→</div>');
+  const top = document.createElement('div');
+  top.innerHTML = `<section class="mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-2"><h2 class="font-bold text-slate-900">文獻流程</h2>
+    <a href="${P.papersUrl}" class="text-sm font-medium text-violet-700 hover:underline">前往文獻清單（導讀・Critical Form・閱讀狀態）→</a></div>
+    <div class="flex flex-wrap gap-2 items-stretch">${steps}</div>
+    <div class="flex flex-wrap gap-2 mt-3">${stats.map(([a, b]) => chip(a + ' ' + b, 'bg-white border border-slate-200 text-slate-600')).join('')}</div>
+    <p class="text-xs text-slate-400 mt-2">「標為收錄」「精讀」來自你在文獻清單用 dropdown 標記的狀態，只存在這個瀏覽器。</p></section>
+    <h2 class="font-bold text-slate-900 mb-1">文獻探討文件</h2>`;
+  main.appendChild(top);
+  main.appendChild(docViewer(P.lit || [], '尚無文獻探討文件。'));
+}
+
+/* ---------- tab: 研究缺口 ---------- */
+function tabGap(main) {
+  const g = P.gap || {};
+  const head = document.createElement('div');
+  head.className = 'flex flex-wrap items-center gap-2 mb-2';
+  head.innerHTML = '<h2 class="font-bold text-slate-900">研究缺口</h2>' + (g.status ? chip(g.status, 'bg-amber-100 text-amber-800') : '');
+  main.appendChild(head);
+  main.appendChild(docViewer(g.docs || [], '尚未整理研究缺口。'));
+}
+
+/* ---------- tab: 研究問題 ---------- */
+const RQ_CHECKS = [
+  'Aim 真的回答 Problem',
+  'Objectives 能達成 Aim（沒有多餘、也沒有不足）',
+  '對應到研究缺口，而不是另起爐灶',
+  'Problem 句尾是問號',
+  'Objectives 2–3 個，條列且各自是短句'
+];
+function tabRq(main) {
+  const key = 'rq:' + pid;
+  const v = store.get(key, { aim: '', problem: '', objs: '', checks: [] });
+  const rq = P.rq || {};
+  const seeds = (rq.seeds || []).map(s => `<li>${esc(s)}</li>`).join('');
+  main.innerHTML = `<div class="flex flex-wrap items-center gap-2 mb-3"><h2 class="font-bold text-slate-900">研究問題</h2>${chip(rq.status || '尚未擬定', 'bg-slate-200 text-slate-600')}</div>
+  <div class="grid md:grid-cols-3 gap-4">
+   <div class="md:col-span-2 space-y-4">
+    <section class="bg-white rounded-lg border border-slate-200 p-5">
+      <h3 class="font-bold text-slate-900 mb-1">描述研究問題（由大到小：Background → Problem → Aim → Objectives）</h3>
+      <p class="text-xs text-slate-500 mb-3">依 QDS 第 2 堂：Purpose/Aim 是長遠目的，通常只有一個；Objectives 是這篇要達成的事，通常 2–3 個。這裡只有你自己的草稿，AI 不會代填；存在這個瀏覽器，定稿後請複製到 <code>02_研究問題/Problem_Aim_Objectives.md</code>。</p>
+      <label class="block text-sm font-semibold text-slate-700 mt-2">Problem（以問號結尾）</label>
+      <textarea id="f-problem" rows="2" class="mt-1 w-full border border-slate-300 rounded p-2 text-sm" placeholder="想解決的問題或假說…？"></textarea>
+      <label class="block text-sm font-semibold text-slate-700 mt-3">Aim / Purpose（一句話，長期目標）</label>
+      <textarea id="f-aim" rows="2" class="mt-1 w-full border border-slate-300 rounded p-2 text-sm" placeholder="這項研究預期帶來的影響或目標"></textarea>
+      <label class="block text-sm font-semibold text-slate-700 mt-3">Objectives（一行一個，2–3 個）</label>
+      <textarea id="f-objs" rows="4" class="mt-1 w-full border border-slate-300 rounded p-2 text-sm" placeholder="1. …&#10;2. …"></textarea>
+      <div class="flex items-center gap-3 mt-3"><button id="rq-copy" class="text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white rounded-full px-4 py-1.5">複製為 Markdown</button><span id="rq-msg" class="text-xs text-slate-400"></span></div>
+    </section>
+    <section class="bg-white rounded-lg border border-slate-200 p-5">
+      <h3 class="font-bold text-slate-900 mb-2">邏輯評判檢核</h3>
+      <div id="rq-checks" class="space-y-1.5"></div>
+      <p class="text-xs text-slate-400 mt-3">這一步的地基確認不可省略：可以打掉重練。要請 Claude 評判時，到「研究架構」分頁的「研究問題」步驟複製指令。</p>
+    </section>
+   </div>
+   <aside class="space-y-4">
+    <section class="bg-white rounded-lg border border-slate-200 p-5"><h3 class="font-bold text-slate-900 mb-2 text-sm">從缺口到問題</h3>
+      <p class="text-sm text-slate-600 leading-relaxed">先在「研究缺口」分頁挑出你要回應的缺口，再寫 Problem。缺口若尚未覆核，先不要往下走。</p>
+      <button class="mt-3 text-sm text-violet-700 hover:underline" onclick="show('gap')">前往研究缺口 →</button></section>
+    ${seeds ? `<section class="bg-amber-50 rounded-lg border border-amber-200 p-5"><h3 class="font-bold text-amber-900 mb-1 text-sm">${esc(rq.seedsTitle || '雛形方向')}</h3>
+      <ul class="list-disc pl-5 space-y-1.5 text-sm text-amber-900 leading-relaxed">${seeds}</ul>
+      <p class="text-xs text-amber-700 mt-2">來源：${esc(rq.seedsSource || '')}</p></section>` : ''}
+   </aside></div>`;
+  const f = { problem: $('#f-problem'), aim: $('#f-aim'), objs: $('#f-objs') };
+  for (const k in f) { f[k].value = v[k] || ''; f[k].oninput = () => { v[k] = f[k].value; store.set(key, v); }; }
+  $('#rq-checks').innerHTML = RQ_CHECKS.map((c, i) => `<label class="flex gap-2 text-sm text-slate-700"><input type="checkbox" data-i="${i}" ${v.checks.includes(i) ? 'checked' : ''} class="mt-1">${esc(c)}</label>`).join('');
+  $('#rq-checks').onchange = e => { const i = +e.target.dataset.i; v.checks = v.checks.filter(x => x !== i); if (e.target.checked) v.checks.push(i); store.set(key, v); };
+  $('#rq-copy').onclick = () => {
+    const objs = (v.objs || '').split('\n').map(s => s.trim().replace(/^\d+[.、)]\s*/, '')).filter(Boolean).map((s, i) => `${i + 1}. ${s}`).join('\n');
+    const md = `# Problem・Aim・Objectives\n\n## Problem\n${v.problem || '（待填）'}\n\n## Aim\n${v.aim || '（待填）'}\n\n## Objectives\n${objs || '（待填）'}\n`;
+    (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject()).then(() => $('#rq-msg').textContent = '已複製', () => prompt('複製以下內容', md));
+  };
+}
+
+/* ---------- tab: 研究架構 ---------- */
+const ROWS = [
+  ['I・L　緒論與文獻（Introduction / Literature）', ['lit', 'gap', 'rq']],
+  ['M　方法（Method）', ['construct', 'method', 'design']],
+  ['R・D・C　結果、討論與結論（Result / Discussion / Conclusion）', ['collect', 'analyze', 'report']]
+];
+const NODES = {
+  lit: {
+    title: '文獻回顧', qds: 'L（Literature）· SLR Phase 0–7', step: '流程步驟 1 文獻蒐集 + 步驟 2 精讀陪讀', tab: 'lit',
+    what: ['看清知識地圖：地基（背景知識）、戰場（近三年研究）、空白（研究缺口）。', 'QDS：找 key paper，看它怎麼架構、結果是否對應；找不到就找相似的來消化，並與指導老師確認。', 'SLR（Tranfield et al., 2003）要有 protocol：事先定義關鍵字、資料庫、納入與排除準則，每個階段的篇數與排除理由都記錄，讓別人能重做。'],
+    checks: ['檢索字串與資料庫有記錄（可重做）', '納入／排除準則與各階段篇數有記錄（PRISMA 式流程）', '先做收錄確認，才進精讀', '每篇精讀填 Critical Form 13 欄（Reference → Significance）', '文獻回顧型論文經驗值約 60–100 篇（QDS 課堂補充，依你的論文類型調整）'],
+    outputs: ['01_文獻探討/背景知識.md', '01_文獻探討/近三年研究.md', 'papers/（文獻站）'],
+    prompt: d => `請依 research-workflow/文獻蒐集Agent_SPEC.md 與 精讀陪讀Agent_SPEC.md，在 ${d}/ 進行下一個階段；每個階段結束就停下等我確認，詮釋性內容標「推論」。`
+  },
+  gap: {
+    title: '研究缺口', qds: 'L → I：由文獻銜接到 Problem', step: '流程步驟 1 的研究缺口階段', tab: 'gap',
+    what: ['每個缺口一張卡：相關背景文獻、相關近期研究、為什麼沒人做、有沒有價值、補上能產生什麼貢獻。', '後三項全部是推論，必須由你覆核；要區分「查不到」與「沒有」。'],
+    checks: ['每個缺口都連得到具體文獻（背景＋近期）', '標出「缺席的可信度」，並補查檢索偏淺的缺口', '你已覆核並選定要回應的缺口', '未覆核的缺口不進研究問題'],
+    outputs: ['01_文獻探討/研究缺口.md'],
+    prompt: d => `請依 research-workflow/文獻蒐集Agent_SPEC.md 的研究缺口階段，重新檢視 ${d}/01_文獻探討/研究缺口.md；針對我標出要補查的缺口，先列出檢索方向再動手，結果標「推論」。`
+  },
+  rq: {
+    title: '研究問題', qds: 'I（Introduction）：Background → Problem → Aim → Objectives', step: '流程步驟 3 的邏輯評判階段', tab: 'rq',
+    what: ['Problem 句尾是問號；Aim（Purpose）是長遠目的，通常一個；Objectives 通常 2–3 個（QDS 第 2 堂）。', '先檢查三件事：Aim 是否回答 Problem、Objectives 能否達成 Aim、是否對應研究缺口。', '地基確認階段不可省略：可以打掉重練，你說「可以規劃框架了」才往下。'],
+    checks: RQ_CHECKS,
+    outputs: ['02_研究問題/Problem_Aim_Objectives.md'],
+    prompt: d => `請依 research-workflow/研究架構Agent_SPEC.md 的「邏輯評判階段」，檢視 ${d}/02_研究問題/Problem_Aim_Objectives.md：Aim 是否回答 Problem、Objectives 能否達成 Aim、是否對應 ${d}/01_文獻探討/研究缺口.md。評判標「推論」，停下等我確認。`
+  },
+  construct: {
+    title: '理論構念', qds: 'L → M：從文獻選出要用的構念', step: '流程步驟 3 的框架規劃階段', tab: null,
+    what: ['從已精讀的文獻選出要操作化的構念（例如擁有感、期望確認），每個構念寫原因、限制、對步驟 4 與結論可推論範圍的影響。', 'QDS Method memo：分清 hypothesis（要證明的假設）與 assumption（不用證明的前提）。'],
+    checks: ['每個構念有文獻出處與定義', '每個構念對得到某個 Objective', '區分 hypothesis 與 assumption', '附「對照參考」：1–2 篇已讀論文的框架'],
+    outputs: ['03_研究架構/研究架構.html'],
+    prompt: d => `請依 research-workflow/研究架構Agent_SPEC.md 的框架規劃階段，在 ${d}/ 規劃理論構念；每項附原因、限制、影響，並附 1–2 篇已讀論文的框架供對照。我確認地基後才開始。`
+  },
+  method: {
+    title: '方法論選擇', qds: 'M（Method）：Methodology 是名詞，不是步驟', step: '流程步驟 3 的框架規劃階段', tab: null,
+    what: ['Methodology 只寫方法（名詞）；步驟留給下一步。碩士論文最好不要用太多方法；受訪者篩選需要設計（QDS Method memo）。', '選方法類別，不選具體技法；具體技法在「研究設計」步驟。'],
+    checks: ['方法類別能產出回答 Objectives 所需的資料類型', '每個方法附原因／限制／影響', '樣本與情境的邊界條件已寫明'],
+    outputs: ['03_研究架構/研究架構.html'],
+    options: [
+      ['訪談', 'QDS 單元二（第 5–8 堂）', '講義尚未開放'],
+      ['個案研究', 'QDS 單元三（第 9–12 堂）', '講義尚未開放'],
+      ['口語分析', 'QDS 單元四（第 13–16 堂）', '講義尚未開放'],
+      ['SLR＋卡片分類＋集群分析', 'QDS 第 4 堂「研究方法工具箱」', '已開放；三者可接力：SLR 蒐集概念 → 卡片分類看心智模型 → 集群分析看共識結構']
+    ],
+    prompt: d => `請依 research-workflow/研究架構Agent_SPEC.md 的框架規劃階段，為 ${d}/ 提出 2–3 個方法類別方案，每個附原因、限制、影響（含對步驟 4 與結論可推論範圍的影響）。`
+  },
+  design: {
+    title: '研究設計', qds: 'M：Steps（人、事、時、地、物 + 分析架構）', step: '流程步驟 4 研究設計', tab: null,
+    what: ['技法提案（2–3 個，各附原因／限制／影響／適用判斷）→ 細節共創（訪談大綱、task scenario、招募、問卷；每題說得出對應哪個構念或 Objective）→ 定稿檢核。', '構念涉及關係中雙方動態時，dyadic／伴侶雙方訪談必須列為候選。', '研究倫理必談：是否送 IRB、知情同意、去識別化、招募用語避免揭露身份。', 'Steps 是過程不是結果（QDS Critical Form 的寫法）。'],
+    checks: ['雙向可回溯：每題對得到構念或 Objective，每個構念或 Objective 至少有一題', '依典範套嚴謹判準（質化：Lincoln & Guba 的 Credibility、Transferability、Dependability、Confirmability）', '研究倫理與同意書已產出', '可用性測試類交給 usability-test-planner skill'],
+    outputs: ['04_研究方法/研究方法_設計說明.md', '04_研究方法/訪談大綱.md（依技法）', '04_研究方法/招募條件.md', '04_研究方法/研究倫理與同意書.md'],
+    options: [
+      ['半結構訪談', '候選技法', '依主題文獻慣例；蒐不到行為現場'],
+      ['日記研究法', '候選技法', '適合追蹤「生成之後」的時間軸；需要參與者持續投入'],
+      ['情境訪查', '候選技法', '看得到實際使用情境；成本高'],
+      ['共同設計工作坊', '候選技法', '適合探索介入方向'],
+      ['Research through Design', '候選技法', '需明確中介層次知識與反思紀錄'],
+      ['dyadic／雙方訪談', '條件必列', '構念涉及關係中雙方動態時']
+    ],
+    prompt: d => `請依 research-workflow/研究設計Agent_SPEC.md，以 ${d}/03_研究架構/研究架構.html 為輸入，先做「技法提案階段」：提 2–3 個技法，各附原因、限制、影響、適用判斷。我選定後再進細節共創。`
+  },
+  collect: {
+    title: '資料蒐集', qds: 'M → R：執行訪談／日記與轉錄（人工）', step: '流程步驟 4 之後、步驟 5 之前的人工階段', tab: null,
+    what: ['執行訪談或日記，Notion 轉錄後匯出逐字稿。', '含真人訪談的原始資料若屬機密，先加進 .gitignore 再放資料。'],
+    checks: ['已送 IRB（如需要）並取得知情同意', '逐字稿檔名 <受訪者代稱>_逐字稿.md', '原始資料的公開範圍已確認'],
+    outputs: ['05_原始資料/<受訪者代稱>_逐字稿.md'],
+    prompt: d => `我要開始資料蒐集。請檢查 ${d}/ 的 .gitignore 是否已排除 05_原始資料/，並列出逐字稿的命名與去識別化清單。`
+  },
+  analyze: {
+    title: '資料分析', qds: 'R（Result）：對資料做總結', step: '流程步驟 5 洞見萃取', tab: null,
+    what: ['九層框架：Raw Data、Context、Behavior、Code（證據層）→ Theme、Pattern（聚類，可回溯）→ Why、Insight、Implication（詮釋層，推論）。', '逐份逐字稿編碼，你宣告「全部受訪者到齊」才做跨受訪者聚合；每個詮釋都要能回溯到原文。'],
+    checks: ['每個 Code 附原文與時間戳，不可編造引用', 'Theme 與 Pattern 可回溯到 Code', '詮釋層一律標「推論」並由你定稿', '用框架重跑可回溯性檢查'],
+    outputs: ['06_結果/01_編碼總表.md', '06_結果/02_Theme彙整.md', '06_結果/03_Pattern卡片.md', '06_結果/04_對應研究框架.md'],
+    prompt: d => `請依 research-workflow/洞見萃取Agent_SPEC.md，對 ${d}/05_原始資料/ 中的逐字稿做逐句編碼；證據層與詮釋層分開，詮釋標「推論」。`
+  },
+  report: {
+    title: '結果・討論・結論', qds: 'R・D・C', step: '由你手動撰寫（07_討論/）', tab: null,
+    what: ['Result 只陳述、不評論，呈現的是 information；Discussion 回扣 Problem，從收斂到發散；Conclusion 不是摘要。', 'Conclusion 要寫：達成了什麼、改變了什麼、對設計圈的重要性，以及下一步——下一步是新發現帶出的新問題，不是「時間不夠沒做」（QDS 第 2 堂 MEMO）。'],
+    checks: ['Discussion 回扣 Problem 與 Objectives', 'Conclusion 沒有重複 Results', '回頭檢查 Introduction 的 Aim 是否被回應', 'Reference 完整（APA 7）'],
+    outputs: ['07_討論/（由你手動撰寫）'],
+    prompt: d => `我要開始寫討論與結論。請依 ${d}/02_研究問題/ 的 Problem 與 Objectives，列出我在 Discussion 需要逐項回扣的檢核表，不要代寫內容。`
+  }
+};
+
+function tabFramework(main) {
+  const prog = P.progress || {};
+  const sel = store.get('node:' + pid, null);
+  main.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2 mb-1"><h2 class="font-bold text-slate-900">研究架構 · 流程圖</h2></div>
+  <p class="text-sm text-slate-500 mb-4">依 QDS 的 AIMRDR 結構排成三列。點一個步驟，下方展開它的檢核、對應檔案與研究設計細節。狀態由專案設定檔決定。</p>
+  ${ROWS.map(([label, ids]) => `<div class="mb-7"><p class="text-xs font-semibold text-slate-500 mb-2">${esc(label)}</p>
+    <div class="row grid md:grid-cols-3 gap-6 md:gap-7">${ids.map(id => {
+      const n = NODES[id], s = STATE[prog[id] || 'todo'];
+      return `<button class="node text-left bg-white border border-slate-200 rounded-lg p-4 hover:border-violet-300 transition" data-node="${id}" aria-pressed="${sel === id}">
+        <div class="flex items-center justify-between gap-2"><span class="font-bold text-slate-900">${esc(n.title)}</span>${chip(s[0], s[1])}</div>
+        <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">${esc(n.qds)}</p></button>`;
+    }).join('')}</div></div>`).join('')}
+  <div class="bg-white rounded-lg border border-dashed border-slate-300 p-3 text-xs text-slate-500 mb-5">框架修正迴圈：執行中發現落差（構念誤判、資料類型不對、邊界不符、文獻支撐不足）時，從「研究設計」「資料蒐集」「資料分析」退回上游重評；文獻支撐不足先退回「文獻回顧」補查（研究架構 SPEC 的框架修正階段）。</div>
+  <div id="detail"></div>`;
+  main.onclick = e => { const b = e.target.closest('[data-node]'); if (b) { store.set('node:' + pid, b.dataset.node); openNode(b.dataset.node, true); } };
+  if (sel) openNode(sel, false);
+}
+
+function openNode(id, scroll) {
+  const n = NODES[id]; if (!n) return;
+  document.querySelectorAll('.node').forEach(b => b.setAttribute('aria-pressed', b.dataset.node === id));
+  const s = STATE[(P.progress || {})[id] || 'todo'];
+  const ck = store.get(`chk:${pid}:${id}`, []);
+  const note = store.get(`note:${pid}:${id}`, '');
+  const prompt = n.prompt(P.dir);
+  const opts = n.options ? `<h4 class="font-bold text-slate-900 mt-5 mb-2 text-sm">候選方法・技法（依 QDS 課程與研究設計 SPEC）</h4>
+    <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><tbody>${n.options.map(o => `<tr>${o.map((c, i) => `<td class="border border-slate-200 p-2 align-top ${i === 0 ? 'font-semibold text-slate-900 whitespace-nowrap' : 'text-slate-600'}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
+  $('#detail').innerHTML = `<section id="panel" class="bg-white rounded-lg border border-violet-200 p-5 md:p-6">
+    <div class="flex flex-wrap items-center gap-2"><h3 class="text-xl font-bold text-slate-900">${esc(n.title)}</h3>${chip(s[0], s[1])}</div>
+    <p class="text-xs text-slate-500 mt-1">${esc(n.qds)} · ${esc(n.step)}</p>
+    <h4 class="font-bold text-slate-900 mt-5 mb-1 text-sm">這一步在做什麼</h4>
+    <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700 leading-relaxed">${n.what.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <h4 class="font-bold text-slate-900 mt-5 mb-1 text-sm">檢核清單</h4>
+    <div id="ck" class="space-y-1.5">${n.checks.map((c, i) => `<label class="flex gap-2 text-sm text-slate-700"><input type="checkbox" data-i="${i}" ${ck.includes(i) ? 'checked' : ''} class="mt-1">${esc(c)}</label>`).join('')}</div>
+    ${opts}
+    <h4 class="font-bold text-slate-900 mt-5 mb-1 text-sm">對應檔案（相對於 ${esc(P.dir)}/）</h4>
+    <ul class="text-sm text-slate-600 space-y-0.5">${n.outputs.map(o => `<li><code class="bg-slate-100 px-1.5 rounded text-xs">${esc(o)}</code></li>`).join('')}</ul>
+    ${n.tab ? `<button class="mt-4 text-sm font-medium bg-violet-600 hover:bg-violet-500 text-white rounded-full px-4 py-1.5" onclick="show('${n.tab}')">前往「${esc(TABS.find(t => t[0] === n.tab)[1])}」分頁 →</button>` : ''}
+    <h4 class="font-bold text-slate-900 mt-5 mb-1 text-sm">我的筆記</h4>
+    <textarea id="note" rows="4" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="這一步的想法、決策與理由（只存在這個瀏覽器）"></textarea>
+    <h4 class="font-bold text-slate-900 mt-5 mb-1 text-sm">在 Claude Code 繼續這一步</h4>
+    <p class="text-xs text-slate-500 mb-1">這個網站是靜態頁，不能自己執行；複製下面的指令貼到 Claude Code 即可。每個階段都會停下等你確認。</p>
+    <pre class="bg-slate-900 text-slate-100 rounded p-3 text-xs whitespace-pre-wrap leading-relaxed" id="pr">${esc(prompt)}</pre>
+    <button id="pc" class="mt-2 text-xs border border-slate-300 rounded px-2.5 py-1 bg-white hover:border-violet-400 text-slate-600">複製指令</button>
+  </section>`;
+  $('#note').value = note;
+  $('#note').oninput = e => store.set(`note:${pid}:${id}`, e.target.value);
+  $('#ck').onchange = e => { const i = +e.target.dataset.i; const a = store.get(`chk:${pid}:${id}`, []).filter(x => x !== i); if (e.target.checked) a.push(i); store.set(`chk:${pid}:${id}`, a); };
+  $('#pc').onclick = e => (navigator.clipboard ? navigator.clipboard.writeText(prompt) : Promise.reject()).then(() => { e.target.textContent = '已複製'; setTimeout(() => e.target.textContent = '複製指令', 1500); }, () => window.prompt('複製指令', prompt));
+  if (scroll) $('#panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+</body></html>

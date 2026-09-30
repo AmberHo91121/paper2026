@@ -1,0 +1,81 @@
+{
+  "AIartifactRetention": {
+    "title": "AI生成物留存率",
+    "subtitle": "為什麼使用者用一句話生成互動物件之後，很少再回頭使用？",
+    "dir": "2026_paper_AIartifactRetention",
+    "papersUrl": "2026_paper_AIartifactRetention/papers/index.html",
+    "papersJs": "2026_paper_AIartifactRetention/papers/papers.js",
+    "statusKey": "paperStatus:AIartifactRetention",
+    "pipeline": [
+      { "label": "背景知識階段", "n": "31 篇", "note": "已確認 · 已收進文獻站並有逐段導讀" },
+      { "label": "近三年研究階段", "n": "39 篇 + 🌱11", "note": "草稿 · 待 review · 尚未收進文獻站" },
+      { "label": "收錄確認", "n": "本機標記", "note": "在文獻清單用 dropdown 標記（存在瀏覽器）" },
+      { "label": "精讀・Critical Form", "n": "{cf} 篇", "note": "抽取草稿 · 待確認（13 欄）" }
+    ],
+    "lit": [
+      { "title": "背景知識", "md": "01_文獻探討/背景知識.md" },
+      { "title": "近三年研究", "md": "01_文獻探討/近三年研究.md" }
+    ],
+    "gap": {
+      "status": "草稿 · 全部為推論 · 待覆核",
+      "docs": [ { "title": "研究缺口", "md": "01_文獻探討/研究缺口.md" } ]
+    },
+    "rq": {
+      "status": "尚未擬定",
+      "seedsTitle": "研究筆記中的雛形方向（非定案，僅供擬定時參考）",
+      "seedsSource": "research_AI生成互動物件持續使用率低.md 第 6 節",
+      "seeds": [
+        "填補「AI 生成互動物件專屬留存率」的資料真空：以日誌研究或實際生成物回訪紀錄，測量這個子類別的留存、回訪與維護行為。",
+        "驗證「擁有感缺失」是否為留存低的因果機制：操弄生成過程的投入程度，測量擁有感與後續留存的關聯。",
+        "檢驗「可編輯性／持續維護管道」能否緩解棄置：比較僅能重新生成 vs. 可局部持續編輯，2–4 週後的留存與情感連結。",
+        "建立「使用者與生成物關係疏離」的構念、量表與階段模型（研究缺口 G9 視為衍生產出）。"
+      ]
+    },
+    "progress": {
+      "lit": "draft",
+      "gap": "draft",
+      "rq": "todo",
+      "construct": "todo",
+      "method": "todo",
+      "design": "todo",
+      "collect": "todo",
+      "analyze": "todo",
+      "report": "todo"
+    }
+  },
+  "intimateData": {
+    "title": "親密資料／女性經期追蹤",
+    "subtitle": "亞洲女性 × 數據 × 設計：自我追蹤資料的意義建構與 FemTech",
+    "dir": "2026_intimateData",
+    "papersUrl": "2026_intimateData/papers/index.html",
+    "papersJs": "2026_intimateData/papers/papers.js",
+    "statusKey": "paperStatus:intimateData",
+    "pipeline": [
+      { "label": "文獻蒐集", "n": "28 篇", "note": "逐篇中文摘要；領域整理；逐篇表格" },
+      { "label": "收錄確認", "n": "本機標記", "note": "在文獻清單用 dropdown 標記（存在瀏覽器）" },
+      { "label": "精讀・Critical Form", "n": "{cf} 篇", "note": "Chen 2026 等已有草稿" }
+    ],
+    "lit": [
+      { "title": "五大研究領域整理", "md": "五大研究領域整理.md" },
+      { "title": "近三年文獻與缺口（PMS）", "md": "PMS相關設計研究_近三年文獻與缺口分析.md" },
+      { "title": "逐篇整理表格", "md": "文獻整理表格_摘要背景問題方法結果討論.md" },
+      { "title": "女性主義 HCI 歷史", "md": "FeministHCI_歷史與演進.md" }
+    ],
+    "gap": {
+      "status": "進行中 · 2026-09-29 重做",
+      "docs": [ { "title": "文獻缺口整理", "md": "文獻缺口整理.md" } ]
+    },
+    "rq": { "status": "尚未擬定", "seeds": [] },
+    "progress": {
+      "lit": "draft",
+      "gap": "draft",
+      "rq": "todo",
+      "construct": "todo",
+      "method": "todo",
+      "design": "todo",
+      "collect": "todo",
+      "analyze": "todo",
+      "report": "todo"
+    }
+  }
+}
