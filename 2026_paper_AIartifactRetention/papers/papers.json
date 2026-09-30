@@ -1,5 +1,5 @@
 {
-  "_說明": "AI生成物留存率 Stage A 背景文獻書目。改完後執行 python papers/build_papers.py 重新產生 papers.js。apa 欄位用 *...* 表示斜體。guideSource：fulltext／abstract／toc 表示導讀依據。",
+  "_說明": "AI生成物留存率背景知識階段文獻書目。改完後執行 python papers/build_papers.py 重新產生 papers.js。apa 欄位用 *...* 表示斜體。guideSource：fulltext／abstract／toc 表示導讀依據。",
   "papers": [
     {
       "id": "Davis1989",
