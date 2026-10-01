@@ -652,6 +652,31 @@
         "path": "papers/critical-form/Bodker2012/01_抽取草稿.md",
         "stage": "抽取草稿 · 待你確認"
       }
+    },
+    {
+      "id": "Kobiella2026",
+      "group": "B0. 轉向後新增（直接相關的近鄰）",
+      "type": "Conference Paper",
+      "year": 2026,
+      "title": "From Throw-Away to Takeaway: How GenAI and Vibe Coding Accelerate Prototyping Across Technical Skill Levels",
+      "authors": [
+        "Charlotte Kobiella",
+        "Daniela Breidenstein",
+        "Albrecht Schmidt"
+      ],
+      "venueShort": "CHI '26",
+      "venue": "Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems",
+      "detail": "pp. 1–23",
+      "apa": "Kobiella, C., Breidenstein, D., & Schmidt, A. (2026). From throw-away to takeaway: How GenAI and vibe coding accelerate prototyping across technical skill levels. In *Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems (CHI '26)* (pp. 1–23). ACM. https://doi.org/10.1145/3772318.3790757",
+      "doi": "10.1145/3772318.3790757",
+      "license": "CC BY-NC-ND 4.0",
+      "licenseKind": "cc-by-nc-nd",
+      "titleZh": "從用完即丟到帶得走：GenAI 與 vibe coding 如何加速不同技術程度者的原型製作",
+      "guideSource": "fulltext",
+      "criticalForm": {
+        "path": "papers/critical-form/Kobiella2026/01_抽取草稿.md",
+        "stage": "抽取草稿 · 待你確認"
+      }
     }
   ]
 }
