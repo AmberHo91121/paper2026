@@ -32,6 +32,9 @@ def main():
         gap = dict(p.get("gap", {}))
         gap["docs"] = read_docs(p["dir"], gap.get("docs", []), missing)
         q["gap"] = gap
+        rq = dict(p.get("rq", {}))
+        rq["docs"] = read_docs(p["dir"], rq.get("docs", []), missing)
+        q["rq"] = rq
         projects[pid] = q
     js = (
         "// 由 build_projects.py 產生，請勿手動修改；改 projects.json 或各專案 md 後重新執行。\n"
