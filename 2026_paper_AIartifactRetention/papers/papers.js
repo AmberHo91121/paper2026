@@ -539,31 +539,6 @@ window.PAPERS = [
   "notesMd": ""
  },
  {
-  "id": "Whittaker2001",
-  "group": "5. 個人資訊管理與數位持有物",
-  "type": "Journal Article",
-  "year": 2001,
-  "title": "The character, value, and management of personal paper archives",
-  "authors": [
-   "Steve Whittaker",
-   "Julia Hirschberg"
-  ],
-  "venueShort": "TOCHI",
-  "venue": "ACM Transactions on Computer-Human Interaction",
-  "detail": "8(2), 150–170",
-  "apa": "Whittaker, S., & Hirschberg, J. (2001). The character, value, and management of personal paper archives. *ACM Transactions on Computer-Human Interaction, 8*(2), 150–170. https://doi.org/10.1145/376929.376932",
-  "doi": "10.1145/376929.376932",
-  "license": "ACM",
-  "licenseKind": "restricted",
-  "titleZh": "個人紙本檔案的特性、價值與管理",
-  "guideSource": "fulltext",
-  "translationMd": null,
-  "criticalFormMd": null,
-  "guideMd": "## Note｜導讀依據\n本導讀依據作者存於 AT&T Labs 個人網頁的投稿版全文（1999 年 4 月送審稿，經 Internet Archive 取得）整理；正式刊登於 TOCHI 的版本在章節名稱、數字與措辭上可能有修訂。\n\n## 1. Introduction｜緒論\n紙本在辦公室的「歸檔與處理」功能很少被研究。作者藉一次辦公室搬遷，檢驗三個假設：\n- **過時假設**：數位資料普及、工作與興趣改變，舊紙本會大量變得沒用而被丟棄。\n- **[[唯一性]]假設**：人是理性的，只會保留別處拿不到的獨特資料。\n- **歸檔假設**：比較 Malone 提出的 [[歸檔與堆疊]]（filing vs. piling）兩種策略，一般直覺認為歸檔較好。\n\n## 2. Method｜研究方法\n在一間工業研究實驗室，對 50 人（研究員、經理、秘書）做線上問卷，蒐集搬遷前後保留與丟棄的紙本量（以統一尺寸的搬家箱計算）、存取頻率、清理時間與新辦公室配置；再對其中 14 人做半結構訪談，錄音逾 35 小時。搬遷迫使每個人剛剛整理過自己的紙本，是研究「留與丟」決策的好時機。\n\n## 3. Results｜研究結果\n- **3.1 過時假設**：幾乎不成立。受訪者平均花近 9 小時整理，最後仍保留約 78% 的原有資料；資歷淺的員工累積紙本反而更快。被丟掉的東西中，有不少是從沒讀過的資料，原因是 [[資訊超載]] 與「延後判斷」：來不及評估就先留著，清理又很少主動發生，多半是換工作、搬家這類外力才觸發。\n- **3.2 唯一性假設**：部分成立。只有約一半是獨特資料（工作筆記、已完成專案檔案、法律與行政文件），其餘是未讀資料與公開文件的影本。保留公開文件的理由包括：隨手可得、能提醒自己、不信任圖書館或網路會一直保存、以及情感因素。有些人則依賴同事當「非正式圖書館員」。\n- **3.3 歸檔假設**：與預期相反。歸檔者累積的資料更多、存取的比例反而較低，也覺得清理更困難。作者稱之為 [[過早歸檔]]：為了保持桌面整潔，把後來證明沒價值的東西也建檔；一旦投入整理成本，就更捨不得丟。堆疊者則因常用的會浮到上層，存取較方便，但堆太多就無法擴展。職務類型對策略選擇影響不大。\n\n## 4. Conclusions｜結論\n紙本在長期記憶與參考上仍有價值，無紙化辦公室並未到來。跨紙本、郵件、語音信箱與電腦檔案，人都面臨同樣的難題：判斷資訊的未來價值、決定是否與如何分類、決定要放手邊還是收起來；而資訊超載與價值會隨時間改變又使問題更嚴重。設計上，只提供存取公共資料庫是不夠的，人仍想要個人副本；數位介面也應學習紙本「隨手可得、能提醒」的特性。\n\n## Relevance to This Study｜與本研究的關聯\n- **「保留」不等於「使用」**：人留下大量資料，但真正被再次取用的比例不高。研究 AI 生成物時，應分開測量「還存在帳號裡」與「實際再被打開、使用」兩種留存，兩者可能明顯分離（推論）。\n- **延後判斷可能正是生成物的常態**：生成當下難以預測未來價值，使用者可能先留著、之後再也不回頭。這可以解釋平台上累積大量「沒被刪、也沒被用」的生成物（推論）。\n- **過早歸檔與投入成本**：投入整理成本會讓人更難丟棄，呼應 IKEA 效應與心理擁有感的投入路徑。反過來說，幾乎沒投入成本的生成物可能很容易被放掉，也可能根本不被整理（推論）。\n- **唯一性與「可重新生成」**：本文顯示人會保留別處拿不到的獨特資料。若使用者認為生成物「隨時可以再叫 AI 做一個」，它就失去唯一性，保留與使用意願可能因此降低（推論）。",
-  "notes": "papers/critical-form/Whittaker2001/筆記.md",
-  "notesMd": ""
- },
- {
   "id": "Whittaker2011",
   "group": "5. 個人資訊管理與數位持有物",
   "type": "Journal Article",
@@ -770,33 +745,8 @@ window.PAPERS = [
   "notesMd": ""
  },
  {
-  "id": "Star1996",
-  "group": "7. Appropriation、基礎設施與物件生態",
-  "type": "Journal Article",
-  "year": 1996,
-  "title": "Steps toward an ecology of infrastructure: Design and access for large information spaces",
-  "authors": [
-   "Susan Leigh Star",
-   "Karen Ruhleder"
-  ],
-  "venueShort": "Inf. Syst. Res.",
-  "venue": "Information Systems Research",
-  "detail": "7(1), 111–134",
-  "apa": "Star, S. L., & Ruhleder, K. (1996). Steps toward an ecology of infrastructure: Design and access for large information spaces. *Information Systems Research, 7*(1), 111–134. https://doi.org/10.1287/isre.7.1.111",
-  "doi": "10.1287/isre.7.1.111",
-  "license": "INFORMS",
-  "licenseKind": "restricted",
-  "titleZh": "邁向基礎設施的生態學：大型資訊空間的設計與取用",
-  "guideSource": "fulltext",
-  "translationMd": null,
-  "criticalFormMd": null,
-  "guideMd": "## Note｜導讀依據\n本導讀依網路上公開的作者投稿版全文（1995 年 10 月、標註「將刊於 *Information Systems Research*」）整理；章節編號與標題依該稿件，與期刊正式版本可能略有出入。\n\n## Abstract｜摘要\n作者分析一套為分散各地的線蟲遺傳學家打造的協作系統 Worm Community System（WCS）。儘管使用者滿意度高、也做了大量需求評估與回饋，許多人仍在登入與使用上遇到困難；研究期間（1991–1994）網際網路快速成長，不少人轉向 Gopher、Mosaic 等工具。作者以 Bateson 的學習層級模型，分析系統取用與設計者—使用者溝通中不同層次的基礎設施複雜性。\n\n## 1. What Is Infrastructure?｜什麼是基礎設施？\n科技對組織變革具有雙重、矛盾的性質：既是推力也是阻力、既可客製又僵固。在大規模分散式科技中，對共同標準與在地彈性的需求同時增強，沒有「通用的利基」。作者把 WCS 開發比喻為一邊造船、一邊設計導航、一邊參加終點不斷移動的比賽。\n- **1.1 When is an Infrastructure?**：借 Engeström「工具何時成為工具」的問法，主張 [[infrastructure]] 是關係性的概念——它只在與特定實踐相關時才成為基礎設施（對廚師是背景的水管，對水電工是工作對象）；並借 Bowker 的 [[infrastructural inversion]]，把基礎設施關係的變化本身當作分析焦點。作者列出基礎設施的八個面向：嵌入於其他結構、使用時透明、跨越時空的範圍、作為成員身分的一部分被習得、與實踐慣例相互塑造、體現標準、建立在既有基礎（[[installed base]]）之上、以及故障時才變得可見。當在地實踐能被較大規模的科技自然地支撐、局部與整體的張力獲得化解時，基礎設施才會出現。\n\n## 2. The Worm Community System (WCS): Background｜WCS 背景\nWCS 是一套分散式「超級圖書館」，整合基因圖譜、研究註記、學者名錄、術語表、社群通訊刊物與資料庫，服務全球約 1,400 位、120 個實驗室的線蟲研究者。作者以民族誌方法在三年間訪談、觀察 25 個實驗室逾百位生物學家，並把觀察回饋給設計團隊。多數受訪者喜歡這個系統，卻多半沒有真正登入使用，而是改用較簡單的網路工具；系統最終沒有被廣泛採用。\n\n## 3. Signing On and Hooking Up｜登入與接上\n使用 WCS 之前，必須先買對電腦、找對視窗介面、會用 telnet／FTP、找到遠端位址——每一步都需要生物學家不具備、而開發者視為理所當然的知識。硬體選擇還可能與校園電腦中心的支援政策衝突，經費也未必足以支撐全實驗室的訓練。許多人始終卡在這些起步障礙，沒有進入日常使用。\n\n## 4. Levels of Communication and Discontinuities in Hierarchies of Information｜溝通層級與資訊階層的斷裂\n- **4.1 Bateson 的模型**：溝通與學習有不同層級，高層級訊息會重新框定低層級訊息的意義，層級之間存在鴻溝。作者據此把基礎設施問題分成三個層級。\n- **4.2 First Order Issues｜一階問題**：可以靠增加資源或資訊解決的具體問題，如得知系統存在、實體取用（機器放在別的樓層、只能晚上用）、基本電腦能力不足與訓練零散。但一階問題常與更高層問題交織。\n- **4.3 Second Order Issues｜二階問題**：多個一階問題相互作用或出乎意料的情境效應，例如生物學家偏好 Mac、排斥 UNIX 的文化衝突；最窮的實驗室因主持人熱衷而用得最好、最富的實驗室卻卡在等網路與設備的「基礎設施悖論」；紙本刊物的截稿期限對使用者既是限制也是資源；以及許多人自稱「就快接上了」的 any day now 使用者——看似瑣碎的接入障礙，長期普遍存在時其實是致命的。\n- **4.4 Third Order Issues｜三階問題**：涉及學派、政治與長期爭議的問題，包括不同學科背景對資料與工具需求的差異、同一資料的多重意義與搶先發表的考量、網絡外部性（系統越核心，接不上的人越吃虧）、社群參與維護資料庫的意願下降，以及建造工具在科學生涯中缺乏獎勵。\n\n## 5. Double Binds: The Transcontextual Syndrome on the Net｜雙重束縛：網路上的跨情境症候群\n當訊息同時在不同層級傳達且彼此矛盾時，就形成 [[double bind]]（雙重束縛）。作者指出三種：對開發者是簡單一階指令（「開個視窗把檔案抓下來」），對使用者卻是一連串二階問題；社群內部關於平台選擇的討論，會牽動資源分配與資料詮釋等三階議題；設計語言講求技術能力，使用語言講求實際成效（例如設計者追求持續更新與超連結，生物學家要的是能印出來貼在實驗桌上註記的圖譜）。\n- **5.1 總結與建議**：作者判斷 WCS「大概永遠不會」成為基礎設施；它由其他來源也能取得的積木組成，很容易被取代。建議有二：多學科開發團隊（含民族誌研究者）協助辨認雙重束縛；以及技術使用者教育不應只教單一應用的一階技能，而要培養能處理二、三階問題的素養，並獎勵在地的調整者與中介者。\n\n## 6. Organizational Environment: Communities & Large-Scale Infrastructure｜組織環境：社群與大規模基礎設施\n採用功能強大的客製化 WCS，需要改變資源配置、工作習慣與基礎設施；Gopher、Mosaic 則能從各種終端取用、支援也容易取得。科學工作需要開放、可整合的基礎設施，WCS 雖整合大量材料卻相對封閉，反不如開放而粗糙的網路工具貼近實驗室筆記本般的整合方式。\n\n## 7. Conclusion｜結論\n高度結構化的協作應用往往無法融入在地實踐；長期而言，會出現在地調整過的應用、資料庫與在地知識，與正式基礎設施交織成不斷演化的混合體。作者主張基礎設施的浮現是緩慢、有機的過程，需要同時兼顧開放可塑與結構可導覽，並以「什麼是基礎設施的生態？」作結。\n\n## Relevance to This Study｜與本研究的關聯\n- WCS 的處境與 AI 生成物高度相似：使用者滿意、覺得好用，卻沒有持續使用。作者的解釋不是介面品質，而是系統沒有接上既有的實踐、資源與工具網絡；這提供了一個跳脫「生成品質」的留存解釋框架（推論）。\n- 「基礎設施何時出現」的關係性觀點，可轉成本研究的問題：生成物在什麼情況下會從「新做好的東西」變成使用者生活中理所當然的工具？嵌入、透明、與慣例連結、建立在既有基礎上等面向，可直接作為訪談或編碼的分析維度（推論）。\n- 一、二、三階問題的分層可以用來分類生成物被棄用的原因：部署與分享等技術步驟（一階）、與既有工具和習慣衝突（二階）、以及對「這算不算我的工作、值不值得維護」的價值判斷（三階）（推論）。\n- 作者指出 WCS 由其他地方也能取得的積木組成，因此容易被替代；AI 生成物同樣可以隨時重新生成，這種可替代性可能降低使用者維護單一生成物的動機（推論）。\n- 「故障時才變得可見」提醒：留存研究不應只看生成物是否還被開啟，也要觀察它在失效、需要修改時使用者如何反應（推論）。",
-  "notes": "papers/critical-form/Star1996/筆記.md",
-  "notesMd": ""
- },
- {
   "id": "Dourish2003",
-  "group": "7. Appropriation、基礎設施與物件生態",
+  "group": "7. Appropriation 與物件生態",
   "type": "Journal Article",
   "year": 2003,
   "title": "The appropriation of interactive technologies: Some lessons from placeless documents",
@@ -820,7 +770,7 @@ window.PAPERS = [
  },
  {
   "id": "Bodker2012",
-  "group": "7. Appropriation、基礎設施與物件生態",
+  "group": "7. Appropriation 與物件生態",
   "type": "Research Article",
   "year": 2012,
   "title": "Dynamics in artifact ecologies",

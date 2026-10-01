@@ -440,26 +440,6 @@
       "guideSource": "fulltext"
     },
     {
-      "id": "Whittaker2001",
-      "group": "5. 個人資訊管理與數位持有物",
-      "type": "Journal Article",
-      "year": 2001,
-      "title": "The character, value, and management of personal paper archives",
-      "authors": [
-        "Steve Whittaker",
-        "Julia Hirschberg"
-      ],
-      "venueShort": "TOCHI",
-      "venue": "ACM Transactions on Computer-Human Interaction",
-      "detail": "8(2), 150–170",
-      "apa": "Whittaker, S., & Hirschberg, J. (2001). The character, value, and management of personal paper archives. *ACM Transactions on Computer-Human Interaction, 8*(2), 150–170. https://doi.org/10.1145/376929.376932",
-      "doi": "10.1145/376929.376932",
-      "license": "ACM",
-      "licenseKind": "restricted",
-      "titleZh": "個人紙本檔案的特性、價值與管理",
-      "guideSource": "fulltext"
-    },
-    {
       "id": "Whittaker2011",
       "group": "5. 個人資訊管理與數位持有物",
       "type": "Journal Article",
@@ -631,28 +611,8 @@
       }
     },
     {
-      "id": "Star1996",
-      "group": "7. Appropriation、基礎設施與物件生態",
-      "type": "Journal Article",
-      "year": 1996,
-      "title": "Steps toward an ecology of infrastructure: Design and access for large information spaces",
-      "authors": [
-        "Susan Leigh Star",
-        "Karen Ruhleder"
-      ],
-      "venueShort": "Inf. Syst. Res.",
-      "venue": "Information Systems Research",
-      "detail": "7(1), 111–134",
-      "apa": "Star, S. L., & Ruhleder, K. (1996). Steps toward an ecology of infrastructure: Design and access for large information spaces. *Information Systems Research, 7*(1), 111–134. https://doi.org/10.1287/isre.7.1.111",
-      "doi": "10.1287/isre.7.1.111",
-      "license": "INFORMS",
-      "licenseKind": "restricted",
-      "titleZh": "邁向基礎設施的生態學：大型資訊空間的設計與取用",
-      "guideSource": "fulltext"
-    },
-    {
       "id": "Dourish2003",
-      "group": "7. Appropriation、基礎設施與物件生態",
+      "group": "7. Appropriation 與物件生態",
       "type": "Journal Article",
       "year": 2003,
       "title": "The appropriation of interactive technologies: Some lessons from placeless documents",
@@ -671,7 +631,7 @@
     },
     {
       "id": "Bodker2012",
-      "group": "7. Appropriation、基礎設施與物件生態",
+      "group": "7. Appropriation 與物件生態",
       "type": "Research Article",
       "year": 2012,
       "title": "Dynamics in artifact ecologies",

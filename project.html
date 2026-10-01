@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script src="projects.js?v=707081cf"></script>
+<script src="projects.js?v=03c3340c"></script>
 <style>
   body { font-family: 'Noto Sans TC', sans-serif; }
   /* 文件內文：三層標題 + 一般內文 */
@@ -380,7 +380,12 @@ function tabFramework(main) {
   const sel = store.get('node:' + pid, null);
   const cur = currentStep();
   const num = id => (window.STEPS || []).findIndex(s => s[0] === id) + 1;
-  main.innerHTML = pageHead('研究架構', null, '', '從問題到結論的 9 步，依 QDS 的 AIMRDR 分三列。點一個步驟看檢核、對應檔案與下一步。') +
+  const fw = P.framework;
+  const fwHtml = fw ? `<section class="bg-white rounded-lg border-2 border-violet-200 p-5 md:p-6 mb-7">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3"><h3 class="text-lg font-bold text-slate-900">${esc(fw.title || '本專案研究架構')}</h3>${fw.status ? chip(fw.status, 'bg-amber-100 text-amber-800') : ''}</div>
+    <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><tbody>${(fw.rows || []).map(r => `<tr><td class="border border-slate-200 p-2 align-top font-semibold text-slate-900 whitespace-nowrap bg-slate-50">${esc(r[0])}</td><td class="border border-slate-200 p-2 align-top text-slate-700 leading-relaxed">${esc(r[1])}</td></tr>`).join('')}</tbody></table></div>
+    ${fw.source ? `<p class="text-xs text-slate-400 mt-3">來源：${esc(fw.source)}</p>` : ''}</section>` : '';
+  main.innerHTML = pageHead('研究架構', null, '', '從問題到結論的 9 步，依 QDS 的 AIMRDR 分三列。點一個步驟看檢核、對應檔案與下一步。') + fwHtml +
   `<div class="flex flex-wrap gap-3 text-xs text-slate-500 mb-5">${['done', 'draft', 'todo'].map(k => `<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full ${STATE[k][2]}"></span>${STATE[k][0]}</span>`).join('')}<span class="flex items-center gap-1.5"><span class="px-1.5 rounded bg-violet-600 text-white">目前</span>下一個要做的階段</span></div>` +
   ROWS.map(([label, ids]) => `<div class="mb-8"><p class="text-xs font-bold tracking-wide text-slate-500 mb-2.5">${esc(label)}</p>
     <div class="row grid md:grid-cols-3 gap-7 md:gap-8">${ids.map(id => {
@@ -404,6 +409,8 @@ function openNode(id, scroll) {
   const note = store.get(`note:${pid}:${id}`, '');
   const prompt = n.prompt(P.dir);
   const no = (window.STEPS || []).findIndex(x => x[0] === id) + 1;
+  const dec = ((P.nodeNotes || {})[id] || []);
+  const decHtml = dec.length ? `<h4 class="font-bold text-slate-900 mt-6 mb-2">本專案目前的決定</h4><ul class="list-disc pl-8 pr-4 py-3 space-y-1.5 text-sm text-slate-700 leading-relaxed bg-violet-50 rounded-lg border border-violet-100">${dec.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
   const opts = n.options ? `<h4 class="font-bold text-slate-900 mt-6 mb-2">候選方法・技法</h4><p class="text-xs text-slate-400 -mt-1 mb-2">依 QDS 課程與研究設計 SPEC</p>
     <div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><tbody>${n.options.map(o => `<tr>${o.map((c, i) => `<td class="border border-slate-200 p-2 align-top ${i === 0 ? 'font-semibold text-slate-900 whitespace-nowrap' : 'text-slate-600'}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : '';
   $('#detail').innerHTML = `<section id="panel" class="bg-white rounded-lg border-2 border-violet-200 p-5 md:p-7">
@@ -416,6 +423,7 @@ function openNode(id, scroll) {
       <div class="md:col-span-3">
         <h4 class="font-bold text-slate-900 mb-2">這一步在做什麼</h4>
         <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-700 leading-relaxed">${n.what.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+        ${decHtml}
         ${opts}
       </div>
       <div class="md:col-span-2 md:border-l md:border-slate-100 md:pl-8">

@@ -5,7 +5,7 @@
 | 資料夾 | 內容 |
 |---|---|
 | [research-workflow/](research-workflow/) | 五步驟研究流程：各步驟 SPEC、HTML 樣板、[系統總覽](research-workflow/系統總覽.html)、Zotero 筆記外掛 |
-| [2026_paper_AIartifactRetention/](2026_paper_AIartifactRetention/) | AI生成物留存率：`01_文獻探討/`（背景知識、近三年研究）、`papers/` 文獻站（背景知識階段 31 篇逐段導讀）、背景研究筆記 |
+| [2026_paper_AIartifactRetention/](2026_paper_AIartifactRetention/) | AI生成物留存率（2026-10-01 轉向：AI 生成的個人工具為何在需求仍在時淡出）：`01_文獻探討/`（文獻地圖、背景知識、近三年研究、轉向後檢索清單、研究缺口、篩選紀錄、搜尋關鍵字）、`研究計畫草稿.md`、`papers/` 文獻站（背景知識階段 29 篇逐段導讀）、背景研究筆記 |
 | [2026_intimateData/](2026_intimateData/) | 親密資料／女性經期追蹤：`papers/` 文獻站、28 篇中文摘要（`translations/`）、六大領域與缺口整理 |
 | `2026_DITL_FDE/`、`2026_DITL_SBPxAI/` | 專案資料（FDE 研究、Service Blueprint × AI）；`SBP_V1/`、`testDB/` 不入庫 |
 
